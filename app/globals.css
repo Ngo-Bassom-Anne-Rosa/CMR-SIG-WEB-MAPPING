@@ -21,3 +21,27 @@ html, body {
 /* Scrollbar personnalisée pour la sidebar */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-thumb { @apply bg-slate-700 rounded-full; }
+
+@media print {
+  /* Cacher la sidebar et les boutons d'action lors de l'impression */
+  aside, header, button, .print-hidden {
+    display: none !important;
+  }
+  
+  /* Ajuster le contenu pour prendre toute la page */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    background: white !important;
+  }
+
+  .grid {
+    display: block !important;
+  }
+
+  .bg-white {
+    box-shadow: none !important;
+    border: 1px solid #eee !important;
+  }
+}

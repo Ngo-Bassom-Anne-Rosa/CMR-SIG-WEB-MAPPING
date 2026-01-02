@@ -1,6 +1,8 @@
 "use client";
 import React from 'react';
-import { MapPin, Leaf, Fish, Dog, X, ChevronRight } from 'lucide-react';
+import { MapPin, Leaf, Fish, Dog, X, BarChart3, Map as MapIcon } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface SidebarProps {
     isOpen: boolean; setIsOpen: (v: boolean) => void;
@@ -9,11 +11,13 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, selectedCulture, setSelectedCulture }: SidebarProps) {
+    const pathname = usePathname();
     const cultures = ["Tous", "Cacao", "Café", "Maïs"];
 
     return (
         <aside className={`${isOpen ? 'w-80' : 'w-0'} fixed lg:relative z-50 h-full bg-[#0f172a] text-white transition-all duration-300 overflow-hidden`}>
             <div className="w-80 p-6 flex flex-col h-full">
+                {/* Logo */}
                 <div className="flex items-center justify-between mb-10">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-amber-400 rounded-lg"><MapPin className="text-slate-900" size={24} /></div>
@@ -22,7 +26,20 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
                     <button onClick={() => setIsOpen(false)} className="lg:hidden"><X /></button>
                 </div>
 
-                <div className="space-y-6">
+                {/* NAVIGATION PRINCIPALE */}
+                <div className="mb-8 space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-4">Menu Principal</label>
+                    <Link href="/dashboard" className={`flex items-center gap-3 p-3 rounded-xl transition-all ${pathname === '/dashboard' ? 'bg-amber-400 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}>
+                        <MapIcon size={18} /> Carte SIG
+                    </Link>
+                    <Link href="/dashboard/stats" className={`flex items-center gap-3 p-3 rounded-xl transition-all ${pathname === '/dashboard/stats' ? 'bg-amber-400 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}>
+                        <BarChart3 size={18} /> Statistiques
+                    </Link>
+                </div>
+
+                {/* FILTRES (Affichez-les uniquement si on est sur la carte) */}
+                {pathname === '/dashboard' && (
+                    <div className="space-y-6 animate-in fade-in duration-500">
                     <div>
                         <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-4">Secteurs</label>
                         {['agriculture', 'elevage', 'peche'].map((t) => (
@@ -47,6 +64,7 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
                         </div>
                     )}
                 </div>
+                )}
             </div>
         </aside>
     );

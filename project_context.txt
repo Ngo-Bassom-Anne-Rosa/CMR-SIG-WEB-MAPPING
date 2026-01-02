@@ -1,0 +1,598 @@
+Project Context From: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING
+Generated On: Fri Jan  2 02:37:28 PM WAT 2026
+===============================================
+Ignored Directory Patterns: .* node_modules vendor build dist target __pycache__ .next cache target venv storage
+Ignored File Patterns: *.log *.jar *.pdf *.png *.jpg *.class *.sqlite *.csv project_context.txt package-lock.json yarn.lock composer.lock *.ico pnpm-lock.yaml
+===============================================
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/app/components/layout/Header.tsx
+
+"use client";
+import React from 'react';
+import { Menu, Search, Settings } from 'lucide-react';
+
+interface HeaderProps {
+    isSidebarOpen: boolean;
+    setSidebarOpen: (v: boolean) => void;
+}
+
+export default function Header({ isSidebarOpen, setSidebarOpen }: HeaderProps) {
+    return (
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center px-4 lg:px-8 justify-between z-40">
+            <div className="flex items-center gap-4 flex-1">
+                <button onClick={() => setSidebarOpen(true)} className={`${isSidebarOpen ? 'hidden' : 'block'} p-2 hover:bg-slate-100 rounded-lg text-slate-600`}>
+                    <Menu size={20} />
+                </button>
+                <div className="relative w-full max-w-lg hidden sm:block">
+                    <Search className="absolute left-4 top-3 text-slate-400" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Rechercher une localité..."
+                        className="w-full pl-12 pr-4 py-2.5 bg-slate-100/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 outline-none transition-all"
+                    />
+                </div>
+            </div>
+
+            <div className="flex items-center gap-3 ml-4">
+                <div className="text-right hidden md:block">
+                    <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase italic">Groupe 5</p>
+                    <p className="text-xs font-semibold text-slate-700">Polytechnique YDE</p>
+                </div>
+                <div className="h-10 w-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 border border-slate-300">
+                    <Settings size={18} />
+                </div>
+            </div>
+        </header>
+    );
+}// END OF FILE: app/components/layout/Header.tsx
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/app/components/layout/Sidebar.tsx
+
+"use client";
+import React from 'react';
+import { MapPin, Leaf, Fish, Dog, X, ChevronRight } from 'lucide-react';
+
+interface SidebarProps {
+    isOpen: boolean; setIsOpen: (v: boolean) => void;
+    activeTab: string; setActiveTab: (v: string) => void;
+    selectedCulture: string; setSelectedCulture: (v: string) => void;
+}
+
+export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, selectedCulture, setSelectedCulture }: SidebarProps) {
+    const cultures = ["Tous", "Cacao", "Café", "Maïs"];
+
+    return (
+        <aside className={`${isOpen ? 'w-80' : 'w-0'} fixed lg:relative z-50 h-full bg-[#0f172a] text-white transition-all duration-300 overflow-hidden`}>
+            <div className="w-80 p-6 flex flex-col h-full">
+                <div className="flex items-center justify-between mb-10">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-amber-400 rounded-lg"><MapPin className="text-slate-900" size={24} /></div>
+                        <h1 className="text-xl font-bold">Agro-Sig <span className="text-amber-400">237</span></h1>
+                    </div>
+                    <button onClick={() => setIsOpen(false)} className="lg:hidden"><X /></button>
+                </div>
+
+                <div className="space-y-6">
+                    <div>
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-4">Secteurs</label>
+                        {['agriculture', 'elevage', 'peche'].map((t) => (
+                            <button key={t} onClick={() => setActiveTab(t)} className={`w-full flex items-center p-3 rounded-xl mb-2 transition-all ${activeTab === t ? 'bg-slate-800' : 'hover:bg-slate-800/50'}`}>
+                                {t === 'agriculture' ? <Leaf size={18} className="mr-3 text-emerald-400" /> : t === 'elevage' ? <Dog size={18} className="mr-3 text-amber-400" /> : <Fish size={18} className="mr-3 text-blue-400" />}
+                                <span className="capitalize">{t}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Sous-filtres Tâche 2.1 */}
+                    {activeTab === 'agriculture' && (
+                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-4">Cultures</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {cultures.map(c => (
+                                    <button key={c} onClick={() => setSelectedCulture(c)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${selectedCulture === c ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}>
+                                        {c}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </aside>
+    );
+}// END OF FILE: app/components/layout/Sidebar.tsx
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/app/components/map/MapInstance.tsx
+
+"use client";
+import { MapContainer, TileLayer, WMSTileLayer, useMapEvents, ScaleControl } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { useState, useEffect } from "react";
+import { X, Info, AreaChart, Map as MapIcon } from 'lucide-react';
+
+const WMS_URL = "https://apodemal-kathern-semisentimentalized.ngrok-free.dev/geoserver/sig_cmr_web_mapping/wms";
+
+interface MapProps { activeFilter: string; culture: string; }
+
+// Gestionnaire de clic pour Tâche 2.2
+function MapEvents({ onInfo }: { onInfo: (data: any) => void }) {
+    const map = useMapEvents({
+        click: async (e) => {
+            const size = map.getSize();
+            const point = map.latLngToContainerPoint(e.latlng);
+            const bounds = map.getBounds();
+
+            const url = `${WMS_URL}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=sig_cmr_web_mapping:regions&QUERY_LAYERS=sig_cmr_web_mapping:regions&INFO_FORMAT=application/json&X=${Math.floor(point.x)}&Y=${Math.floor(point.y)}&WIDTH=${size.x}&HEIGHT=${size.y}&SRS=EPSG:4326&BBOX=${bounds.toBBoxString()}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.features?.length > 0) onInfo(data.features[0].properties);
+            } catch (err) { console.error(err); }
+        },
+    });
+    return null;
+}
+
+export default function MapInstance({ activeFilter, culture }: MapProps) {
+    const [feature, setFeature] = useState<any>(null);
+
+    // Tâche 2.1 : Construction du filtre CQL
+    const cqlFilter = culture !== 'Tous' ? `culture='${culture}'` : "INCLUDE";
+
+    return (
+        <div className="h-full w-full relative">
+            <MapContainer center={[7.36, 12.35]} zoom={6} className="h-full w-full" zoomControl={false}>
+                <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
+
+                <WMSTileLayer
+                    url={WMS_URL}
+                    params={{
+                        layers: 'sig_cmr_web_mapping:regions',
+                        format: 'image/png',
+                        transparent: true,
+                        CQL_FILTER: cqlFilter
+                    } as any}
+                />
+
+                <MapEvents onInfo={setFeature} />
+                <ScaleControl position="bottomleft" />
+            </MapContainer>
+
+            {/* Tâche 2.3 : Side Drawer Coulissant */}
+            <div className={`fixed top-24 right-6 bottom-6 w-80 bg-white/95 backdrop-blur-md shadow-2xl rounded-3xl z-[1001] transition-transform duration-500 border border-slate-200 ${feature ? 'translate-x-0' : 'translate-x-[120%]'}`}>
+                {feature && (
+                    <div className="p-6 h-full flex flex-col">
+                        <button onClick={() => setFeature(null)} className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full transition-colors">
+                            <X size={20} className="text-slate-400" />
+                        </button>
+
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-3 bg-amber-100 text-amber-600 rounded-2xl"><Info size={24} /></div>
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800">{feature.nom_reg || "Région"}</h2>
+                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Détails du bassin</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4 flex-1">
+                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <div className="flex items-center gap-2 mb-1 text-slate-400"><MapIcon size={14} /> <span className="text-[10px] font-bold uppercase">Chef-Lieu</span></div>
+                                <p className="font-semibold text-slate-700">{feature.chef_lieu || "N/A"}</p>
+                            </div>
+                            <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                                <div className="flex items-center gap-2 mb-1 text-emerald-500"><AreaChart size={14} /> <span className="text-[10px] font-bold uppercase">Superficie</span></div>
+                                <p className="font-bold text-emerald-700 text-lg">45,000 km²</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Tâche 4.3 : Mini-Carte (Aperçu fixe) */}
+            <div className="absolute bottom-6 left-6 w-32 h-32 rounded-2xl border-2 border-white shadow-lg overflow-hidden z-[1000] hidden md:block">
+                <MapContainer center={[7.36, 12.35]} zoom={3} className="h-full w-full" dragging={false} zoomControl={false} scrollWheelZoom={false}>
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                </MapContainer>
+            </div>
+        </div>
+    );
+}// END OF FILE: app/components/map/MapInstance.tsx
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/app/components/map/MapWrapper.tsx
+
+"use client";
+import dynamic from "next/dynamic";
+
+const MapInstance = dynamic(() => import("./MapInstance"), {
+    ssr: false,
+    loading: () => <div className="h-full w-full bg-slate-100 flex items-center justify-center">Chargement SIG...</div>,
+});
+
+export default function MapWrapper(props: any) {
+    return <MapInstance {...props} />;
+}// END OF FILE: app/components/map/MapWrapper.tsx
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/app/components/ui/Legend.tsx
+
+// END OF FILE: app/components/ui/Legend.tsx
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/app/dashboard/page.tsx
+
+"use client";
+import React, { useState } from 'react';
+import Sidebar from "../components/layout/Sidebar";
+import Header from "../components/layout/Header";
+import MapWrapper from "../components/map/MapWrapper";
+
+export default function DashboardPage() {
+    const [isSidebarOpen, setSidebarOpen] = useState(true);
+    const [activeTab, setActiveTab] = useState('agriculture');
+    const [selectedCulture, setSelectedCulture] = useState('Tous');
+
+    return (
+        <div className="flex h-screen w-full bg-[#f8fafc] overflow-hidden font-sans text-slate-900">
+            <Sidebar
+                isOpen={isSidebarOpen}
+                setIsOpen={setSidebarOpen}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                selectedCulture={selectedCulture}
+                setSelectedCulture={setSelectedCulture}
+            />
+
+            <main className="flex-1 flex flex-col relative min-w-0">
+                <Header isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
+                <div className="flex-1 relative z-0">
+                    {/* On passe le filtre et la culture à la carte */}
+                    <MapWrapper activeFilter={activeTab} culture={selectedCulture} />
+                </div>
+            </main>
+        </div>
+    );
+}// END OF FILE: app/dashboard/page.tsx
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/app/globals.css
+
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --glass: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+  }
+}
+
+html, body {
+  height: 100%;
+  @apply bg-slate-100 text-slate-900 antialiased;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  @apply grayscale-[0.2] contrast-[1.1]; /* Look plus moderne */
+}
+
+/* Scrollbar personnalisée pour la sidebar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { @apply bg-slate-700 rounded-full; }// END OF FILE: app/globals.css
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/app/layout.tsx
+
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+    title: "Agro-Sig 237",
+    description: "Cartographie des bassins de production du Cameroun",
+};
+
+export default function RootLayout({
+                                       children,
+                                   }: {
+    children: React.ReactNode;
+}) {
+    return (
+        <html lang="fr">
+        <body>{children}</body>
+        </html>
+    );
+}// END OF FILE: app/layout.tsx
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/app/page.tsx
+
+import { redirect } from "next/navigation";
+
+export default function Home() {
+
+    redirect("/dashboard");
+}// END OF FILE: app/page.tsx
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/eslint.config.mjs
+
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+// END OF FILE: eslint.config.mjs
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/.gitignore
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+.idea
+.vscode// END OF FILE: .gitignore
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/LICENSE
+
+MIT License
+
+Copyright (c) 2025 VUIDE OUENDEU FRANCK JORDAN
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+// END OF FILE: LICENSE
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/next.config.ts
+
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+// END OF FILE: next.config.ts
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/next-env.d.ts
+
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/dev/types/routes.d.ts";
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+// END OF FILE: next-env.d.ts
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/package.json
+
+{
+  "name": "agro-sig-237",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.562.0",
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-leaflet": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.21",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.23",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5"
+  }
+}
+// END OF FILE: package.json
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/postcss.config.mjs
+
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+// END OF FILE: postcss.config.mjs
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/public/file.svg
+
+[Non-text file (e.g., binary, data, compressed) - Contents omitted]
+// END OF FILE: public/file.svg
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/public/globe.svg
+
+[Non-text file (e.g., binary, data, compressed) - Contents omitted]
+// END OF FILE: public/globe.svg
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/public/next.svg
+
+[Non-text file (e.g., binary, data, compressed) - Contents omitted]
+// END OF FILE: public/next.svg
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/public/vercel.svg
+
+[Non-text file (e.g., binary, data, compressed) - Contents omitted]
+// END OF FILE: public/vercel.svg
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/public/window.svg
+
+[Non-text file (e.g., binary, data, compressed) - Contents omitted]
+// END OF FILE: public/window.svg
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/README.md
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+// END OF FILE: README.md
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/tailwind.config.ts
+
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+    content: [
+        "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    ],
+    theme: {
+        extend: {
+            colors: {
+                'agro-green': '#059669', // Pour l'Agriculture [cite: 19]
+                'agro-gold': '#FBBF24',  // Pour l'Élevage [cite: 20]
+                'agro-blue': '#3B82F6',  // Pour la Pêche [cite: 21]
+                'sidebar-bg': '#0f172a',
+            },
+        },
+    },
+    plugins: [],
+};
+export default config;// END OF FILE: tailwind.config.ts
+
+//---> PATH: /home/nathan-amvela-bengono/Documents/CMR-SIG-WEB-MAPPING/tsconfig.json
+
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+// END OF FILE: tsconfig.json
+
