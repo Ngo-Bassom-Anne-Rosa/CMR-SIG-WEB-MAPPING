@@ -548,7 +548,7 @@ export default function StatsPage() {
                             <div className="p-2 bg-slate-100 rounded-xl text-slate-400">
                               <row.icon size={20} />
                             </div>
-                            <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-widest text-center">
+                            <span className="text-[15px] font-extrabold uppercase text-slate-400 tracking-widest text-center">
                               {row.label}
                             </span>
                           </div>
