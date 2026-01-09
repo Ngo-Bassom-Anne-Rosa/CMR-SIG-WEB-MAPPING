@@ -10,7 +10,7 @@ const config: Config = {
                 'agro-green': '#059669', // Pour l'Agriculture [cite: 19]
                 'agro-gold': '#FBBF24',  // Pour l'Élevage [cite: 20]
                 'agro-blue': '#3B82F6',  // Pour la Pêche [cite: 21]
-                'sidebar-bg': '#0f172a',
+                'sidebar-bg': '#0f172b',
             },
         },
     },
