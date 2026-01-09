@@ -20,3 +20,10 @@ export const FILTER_COLS = {
     elevage: 'category',         // Souvent 'category', 'type' ou 'animal' en anglais
     peche: 'type'                // Souvent 'type' ou 'technique'
 };
+
+
+export const SECTOR_API_MAPPING: Record<string, string> = {
+    agriculture: 'agriculture',
+    elevage: 'farming', // Important pour tes routes /api/stats/farming/...
+    peche: 'fishing'
+};
