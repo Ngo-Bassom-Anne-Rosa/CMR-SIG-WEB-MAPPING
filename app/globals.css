@@ -45,3 +45,14 @@ html, body {
     border: 1px solid #eee !important;
   }
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(16, 185, 129, 0.2); /* Vert transparent */
+  border-radius: 20px;
+}
