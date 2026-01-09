@@ -183,3 +183,6 @@ export default function MapInstance({ activeFilter, culture }: MapProps) {
     );
 }
 
+
+
+
