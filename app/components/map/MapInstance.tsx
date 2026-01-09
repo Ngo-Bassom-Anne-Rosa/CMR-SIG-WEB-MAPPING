@@ -18,7 +18,7 @@ function MapEvents({ onInfo, activeLayer }: { onInfo: (data: any) => void, activ
             const point = map.latLngToContainerPoint(e.latlng);
             const bounds = map.getBounds();
 
-            // On construit l'URL GetFeatureInfo pour récupérer TOUTES les données du point cliqué
+            // Construction de l'URL GetFeatureInfo
             const params = new URLSearchParams({
                 SERVICE: 'WMS',
                 VERSION: '1.1.1',
@@ -35,7 +35,13 @@ function MapEvents({ onInfo, activeLayer }: { onInfo: (data: any) => void, activ
             });
 
             try {
-                const res = await fetch(`${GEOSERVER_WMS_URL}?${params.toString()}`);
+                // CORRECTION : Ajout du header ngrok pour éviter de recevoir du HTML au lieu du JSON
+                const res = await fetch(`${GEOSERVER_WMS_URL}?${params.toString()}`, {
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true'
+                    }
+                });
+
                 const data = await res.json();
                 if (data.features && data.features.length > 0) {
                     onInfo(data.features[0].properties);
@@ -94,7 +100,10 @@ export default function MapInstance({ activeFilter, culture }: MapProps) {
                                 transparent: true,
                                 version: '1.1.1',
                                 styles: '',
-                                CQL_FILTER: cqlFilter
+                                CQL_FILTER: cqlFilter,
+                                // Note: Pour le flux d'images (WMS), ngrok peut aussi bloquer.
+                                // Leaflet ne permet pas d'ajouter des headers personnalisés aux balises <img> nativement.
+                                // Si les images ne s'affichent toujours pas, il faudra bypasser ngrok manuellement une fois dans le navigateur.
                             } as any}
                         />
                     </LayersControl.BaseLayer>
