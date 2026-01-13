@@ -21,33 +21,31 @@ export default function LoginPage() {
     setIsLoading(true);
     setError(null);
     if (!email || !password) {
-      setError('Veuillez remplir tous les champs.');       
+      setError('Veuillez remplir tous les champs.');
+      setIsLoading(false); // Ajout pour arrêter le chargement en cas d'erreur de validation
       return;
-     }
-
+    }
      
     try {
+      // On appelle notre propre API Next.js qui agit comme un proxy
       const res = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-         },
-         body: JSON.stringify({ email, password }),
-       });
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-       const data = await res.json();
-       if (res.ok) {
-         // In a real app, you would store the token in a cookie or local storage
-         console.log('Login Success:', data);
-         router.push('/dashboard');
-       } else {
-         setError(data.message || 'Une erreur est survenue.');
-       }
-
-      
-      
-      } catch (err) {
-      // Gestion des erreurs (ex: mot de passe incorrect)
+      const data = await res.json();
+      if (res.ok && data.token) {
+        // --- LA LIGNE LA PLUS IMPORTANTE ---
+        localStorage.setItem('authToken', data.token);
+        // ------------------------------------
+        
+        console.log('Login Success:', data);
+        router.push('/dashboard');
+      } else {
+        setError(data.msg || 'Une erreur est survenue.'); // 'msg' car c'est ce que votre API renvoie
+      }
+    } catch (err) {
       setError('Impossible de se connecter au serveur.');
       console.error(err);
     } finally {
@@ -181,114 +179,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-
-
-
-// 'use client';
-
-// import { useState } from 'react';
-// import Link from 'next/link';
-// import { useRouter } from 'next/navigation';
-
-// export default function LoginPage() {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [error, setError] = useState('');
-//   const router = useRouter();
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setError('');
-
-//     if (!email || !password) {
-//       setError('Veuillez remplir tous les champs.');
-//       return;
-//     }
-
-//     try {
-//       const res = await fetch('/api/auth/login', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ email, password }),
-//       });
-
-//       const data = await res.json();
-
-//       if (res.ok) {
-//         // In a real app, you would store the token in a cookie or local storage
-//         console.log('Login Success:', data);
-//         router.push('/dashboard');
-//       } else {
-//         setError(data.message || 'Une erreur est survenue.');
-//       }
-//     } catch (err) {
-//       setError('Impossible de se connecter au serveur.');
-//     }
-//   };
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-//       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-//         <h1 className="text-2xl font-bold text-center text-gray-900">Se connecter</h1>
-//         <form onSubmit={handleSubmit} className="space-y-6">
-//           <div>
-//             <label
-//               htmlFor="email"
-//               className="text-sm font-medium text-gray-700"
-//             >
-//               Adresse e-mail
-//             </label>
-//             <input
-//               id="email"
-//               name="email"
-//               type="email"
-//               autoComplete="email"
-//               required
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               className="block w-full px-3 py-2 mt-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-//               placeholder="vous@example.com"
-//             />
-//           </div>
-//           <div>
-//             <label
-//               htmlFor="password"
-//               className="text-sm font-medium text-gray-700"
-//             >
-//               Mot de passe
-//             </label>
-//             <input
-//               id="password"
-//               name="password"
-//               type="password"
-//               autoComplete="current-password"
-//               required
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               className="block w-full px-3 py-2 mt-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-//               placeholder="********"
-//             />
-//           </div>
-//           {error && <p className="text-sm text-red-600">{error}</p>}
-//           <div>
-//             <button
-//               type="submit"
-//               className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-//             >
-//               Se connecter
-//             </button>
-//           </div>
-//         </form>
-//         <p className="text-sm text-center text-gray-600">
-//           Vous n&apos;avez pas de compte ?{' '}
-//           <Link href="/auth/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-//             S&apos;inscrire
-//           </Link>
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }

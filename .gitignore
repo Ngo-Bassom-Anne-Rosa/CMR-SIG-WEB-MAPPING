@@ -43,3 +43,8 @@ next-env.d.ts
 .idea
 .vscode
 projet_complet.txt
+
+# personal
+frontend.sh
+frontend.txt
+roadmap.md
