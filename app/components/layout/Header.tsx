@@ -1,11 +1,11 @@
+// FILE: ./app/components/layout/Header.tsx
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Menu, Search, User, LogOut, ChevronDown, Calendar, Star, Home } from 'lucide-react';
+import { Menu, Search, User, LogOut, ChevronDown, Star, Home, Loader2, MapPin } from 'lucide-react';
 import Image from 'next/image';
-import { API_BASE_URL } from '@/app/lib/config';
+import { API_BASE_URL, SECTOR_API_MAPPING } from '@/app/lib/config';
 
-// On garde un type simple pour le profil du header
 type UserProfileHeader = {
     email: string;
     first_name?: string;
@@ -14,47 +14,93 @@ type UserProfileHeader = {
 interface HeaderProps {
     isSidebarOpen: boolean;
     setSidebarOpen: (v: boolean) => void;
+    activeTab?: string; // Optionnel pour la rétrocompatibilité
+    onSearchResult?: (result: any) => void;
 }
 
-export default function Header({ isSidebarOpen, setSidebarOpen }: HeaderProps) {
+export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agriculture', onSearchResult }: HeaderProps) {
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [user, setUser] = useState<UserProfileHeader | null>(null);
 
-    // --- EFFET POUR CHARGER LE PROFIL DE L'UTILISATEUR ---
+    // États pour la recherche
+    const [query, setQuery] = useState('');
+    const [results, setResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showResults, setShowResults] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
+
+    // Fermer les résultats si on clique ailleurs
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setShowResults(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // Chargement profil
     useEffect(() => {
         const fetchUser = async () => {
-            // Dans une vraie application, on récupère le token du localStorage ou des cookies
             const token = localStorage.getItem('authToken');
-            if (!token) {
-                // Si pas de token, on ne fait rien, l'utilisateur n'est pas connecté
-                return;
-            }
-
+            if (!token) return;
             try {
                 const res = await fetch(`${API_BASE_URL}/profile/me`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                if (res.ok) setUser(await res.json());
+            } catch (error) { console.error(error); }
+        };
+        fetchUser();
+    }, []);
 
+    // Logique de recherche (Debounce simple via useEffect)
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(async () => {
+            if (query.length < 2) {
+                setResults([]);
+                return;
+            }
+
+            setIsSearching(true);
+            const apiFiliere = SECTOR_API_MAPPING[activeTab] || 'agriculture';
+            
+            try {
+                // On récupère la liste complète (optimisation possible: filtrer côté serveur si l'API le permettait)
+                // Ici, on filtre côté client sur la liste retournée car l'endpoint /list renvoie tout
+                const res = await fetch(`${API_BASE_URL}/basins/${apiFiliere}/list?year=2021`); // Année par défaut pour avoir les zones
                 if (res.ok) {
                     const data = await res.json();
-                    setUser(data);
-                } else {
-                    // Le token est peut-être invalide, on pourrait gérer la déconnexion ici
-                    console.error("Token invalide ou expiré");
-                    localStorage.removeItem('authToken');
+                    // Filtrage simple côté client
+                    const filtered = data.filter((item: any) => 
+                        item.entity_name?.toLowerCase().includes(query.toLowerCase()) ||
+                        item.nom_zone?.toLowerCase().includes(query.toLowerCase())
+                    ).slice(0, 5); // Limiter à 5 résultats
+                    setResults(filtered);
+                    setShowResults(true);
                 }
-            } catch (error) {
-                console.error("Erreur de connexion au serveur de profil", error);
+            } catch (err) {
+                console.error("Erreur recherche", err);
+            } finally {
+                setIsSearching(false);
             }
-        };
+        }, 500); // Délai de 500ms
 
-        fetchUser();
-    }, []); // Se lance une seule fois au chargement du composant
+        return () => clearTimeout(delayDebounceFn);
+    }, [query, activeTab]);
+
+    const handleSelectResult = (item: any) => {
+        setQuery(item.entity_name || item.nom_zone);
+        setShowResults(false);
+        if (onSearchResult) {
+            onSearchResult(item);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('authToken');
-        window.location.href = '/'; // Redirection simple vers la page de login
+        window.location.href = '/';
     };
 
     return (
@@ -69,14 +115,52 @@ export default function Header({ isSidebarOpen, setSidebarOpen }: HeaderProps) {
                 </button>
                 <div className="hidden md:block">
                     <h1 className="text-lg font-bold text-slate-800 tracking-tight">Tableau de Bord</h1>
-                    <p className="text-xs text-slate-500">Analyse Géospatiale</p>
+                    <p className="text-xs text-slate-500 capitalize">Filière : {activeTab}</p>
                 </div>
             </div>
 
-            <div className="flex-1 flex justify-center items-center gap-4 px-4">
-                {/* ... (La partie Recherche & Année ne change pas) ... */}
+            {/* --- BARRE DE RECHERCHE --- */}
+            <div className="flex-1 max-w-xl mx-4 relative" ref={searchRef}>
+                <div className="relative group">
+                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-amber-500 transition-colors">
+                        {isSearching ? <Loader2 size={20} className="animate-spin"/> : <Search size={20} />}
+                    </div>
+                    <input 
+                        type="text" 
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onFocus={() => { if(results.length > 0) setShowResults(true); }}
+                        placeholder={`Rechercher un bassin dans ${activeTab}...`} 
+                        className="w-full bg-slate-100/50 border border-slate-200 text-slate-800 rounded-2xl py-3 pl-12 pr-4 focus:outline-none focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all font-medium placeholder:text-slate-400"
+                    />
+                </div>
+
+                {/* Dropdown Résultats */}
+                {showResults && results.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="p-2">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest px-3 py-2">Résultats suggérés</p>
+                            {results.map((item, idx) => (
+                                <button 
+                                    key={idx}
+                                    onClick={() => handleSelectResult(item)}
+                                    className="w-full text-left flex items-center gap-3 px-3 py-3 hover:bg-slate-50 rounded-xl transition-colors group"
+                                >
+                                    <div className="p-2 bg-slate-100 text-slate-500 rounded-lg group-hover:bg-amber-100 group-hover:text-amber-600 transition-colors">
+                                        <MapPin size={16} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-slate-700">{item.entity_name || item.nom_zone}</p>
+                                        <p className="text-xs text-slate-400">{item.region_name || 'Cameroun'} • {item.admin_level === 'R' ? 'Région' : 'Département'}</p>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
+            {/* ... (Reste du code User Profile inchangé) ... */}
             <div className="relative">
                 <button 
                     onClick={() => setProfileMenuOpen(!profileMenuOpen)}

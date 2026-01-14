@@ -21,9 +21,9 @@ export const FILTER_COLS = {
 
 // NOMS DES STYLES DANS GEOSERVER
 export const STYLES = {
-    agriculture: '', // Laissez vide pour utiliser le style par défaut de la couche
-    elevage: '',
-    peche: '',
+    agriculture: 'style_agriculture',
+    elevage: 'style_farming',
+    peche: 'style_fishing',
     default: 'polygon'
 };
 
