@@ -9,7 +9,6 @@
 
 html, body {
   height: 100%;
-  overflow: hidden; /* Empêche le scroll global du body, on gère le scroll dans main */
   @apply bg-slate-100 text-slate-900 antialiased;
 }
 

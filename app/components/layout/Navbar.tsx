@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { MapPin, User, LogOut, Star, LayoutDashboard } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@/app/lib/config';
 
 interface NavbarProps {
     activeColorClass: string;
@@ -15,12 +16,20 @@ export default function Navbar({ activeColorClass }: NavbarProps) {
     const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
+        const fetchUser = async () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+
             setIsLoggedIn(true);
-            // Dans une vraie app, on extrairait le nom du token ou via un appel API.
-            setUserName("Jordan O.");
-        }
+            try {
+                const res = await fetch(`${API_BASE_URL}/profile/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const user = await res.json();
+                if (res.ok) setUserName(user.first_name ? `${user.first_name}` : 'Mon Compte');
+            } catch (error) { console.error(error); }
+        };
+        fetchUser();
     }, []);
 
     const handleLogout = () => {
