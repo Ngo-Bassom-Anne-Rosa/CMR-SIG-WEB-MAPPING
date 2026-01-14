@@ -47,7 +47,6 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
           let options: string[] = [];
           if (backendSector === 'agriculture' && data?.filters?.agriculture?.options) {
             options = data.filters.agriculture.options;
-            console.log('options', options);
           } else if (backendSector === 'farming' && data?.filters?.farming?.options) {
             options = data.filters.farming.options;
           } else if (backendSector === 'fishing') {
@@ -151,19 +150,6 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
               </div>
             </section>
           )}
-
-          <section>
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mb-4 block">Calques Administratifs</label>
-            <div className="px-2 space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-slate-900 border border-slate-800">
-                <div className="flex items-center gap-3 text-slate-400">
-                  <Layers size={16} />
-                  <span className="text-sm">Régions</span>
-                </div>
-                <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]"></div>
-              </div>
-            </div>
-          </section>
         </div>
 
         <div className="p-4 bg-slate-900/50 m-4 rounded-2xl border border-slate-800">

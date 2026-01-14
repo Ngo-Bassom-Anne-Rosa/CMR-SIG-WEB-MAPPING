@@ -104,7 +104,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
     };
 
     return (
-        <header className="h-20 bg-white/90 backdrop-blur-lg border-b border-slate-200/80 flex items-center px-4 sm:px-6 lg:px-8 justify-between z-40 sticky top-0 shadow-sm">
+        <header className="h-20 bg-white/90 backdrop-blur-lg border-b border-slate-200/80 flex items-center px-4 sm:px-6 lg:px-8 justify-between z-2000 sticky top-0 shadow-sm">
             
             <div className="flex items-center gap-4">
                 <button 

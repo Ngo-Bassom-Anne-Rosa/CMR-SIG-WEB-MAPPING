@@ -1,9 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { X, Loader2, MapPin, BarChart3 } from 'lucide-react';
+import { X, Loader2, MapPin, BarChart3, Star, Check } from 'lucide-react';
 import { GeoJSONFeature, FeatureProperties } from "./types";
 import { THEME_CONFIG } from "./constants";
+import { API_BASE_URL } from "@/app/lib/config";
 
 interface SideDrawerProps {
     feature: GeoJSONFeature | null;
@@ -14,36 +15,74 @@ interface SideDrawerProps {
 export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawerProps) {
     const [details, setDetails] = useState<FeatureProperties | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const router = useRouter();
+    
+    // Etats pour les favoris
+    const [isFavLoading, setIsFavLoading] = useState(false);
+    const [isFavSuccess, setIsFavSuccess] = useState(false);
 
+    const router = useRouter();
     const theme = THEME_CONFIG[activeFilter] || THEME_CONFIG.agriculture;
     const ThemeIcon = theme.icon;
 
     useEffect(() => {
         if (!feature) return;
-
-        const fetchDetails = async () => {
-            setIsLoading(true);
-            try {
-                // Ici, on simule une récupération ou on utilise directement les propriétés du GeoJSON
-                // Si vous avez besoin d'appeler votre API backend pour plus de détails, faites-le ici.
-                setDetails(feature.properties);
-            } catch (error) {
-                console.error(error);
-                setDetails(feature.properties);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchDetails();
+        setIsFavSuccess(false); // Reset état favori au changement
+        setIsLoading(true);
+        // Simulation fetch details si besoin, sinon on prend les props direct
+        setTimeout(() => {
+            setDetails(feature.properties);
+            setIsLoading(false);
+        }, 300);
     }, [feature, activeFilter]);
 
     const handleGoToStats = () => {
         if (!details) return;
         const name = details.entity_name || details.nom_zone || details.name;
-        if (name) {
-            router.push(`/dashboard/stats?compare_with=${encodeURIComponent(name)}`);
+        if (name) router.push(`/dashboard/stats?compare_with=${encodeURIComponent(name)}`);
+    };
+
+    // --- LOGIQUE AJOUT FAVORIS ---
+    const handleAddToFavorites = async () => {
+        if (!details) return;
+        
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            alert("Veuillez vous connecter pour ajouter des favoris.");
+            return;
+        }
+
+        setIsFavLoading(true);
+        try {
+            const body = {
+                admin_level: details.admin_level || 'D',
+                entity_name: details.entity_name || details.nom_zone || details.name
+            };
+
+            const res = await fetch(`${API_BASE_URL}/profile/me/favorites`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (res.ok) {
+                setIsFavSuccess(true);
+                setTimeout(() => setIsFavSuccess(false), 2000); // Reset visuel après 2s
+            } else {
+                const err = await res.json();
+                if(res.status === 400 && err.msg.includes('déjà')) {
+                    alert("Ce bassin est déjà dans vos favoris !");
+                } else {
+                    alert("Erreur lors de l'ajout.");
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Erreur réseau.");
+        } finally {
+            setIsFavLoading(false);
         }
     };
 
@@ -64,16 +103,28 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
                     <ThemeIcon size={120} className="text-white transform rotate-12 translate-x-4 -translate-y-4" />
                 </div>
                 
-                <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 text-white rounded-full transition-colors z-10 backdrop-blur-sm">
-                    <X size={18} />
-                </button>
+                <div className="absolute top-4 right-4 flex gap-2 z-20">
+                    {/* BOUTON FAVORIS */}
+                    <button 
+                        onClick={handleAddToFavorites}
+                        disabled={isFavLoading || isFavSuccess}
+                        className={`p-2 rounded-full transition-all backdrop-blur-sm ${isFavSuccess ? 'bg-white text-emerald-500' : 'bg-white/20 hover:bg-white/30 text-white'}`}
+                        title="Ajouter aux favoris"
+                    >
+                        {isFavLoading ? <Loader2 size={18} className="animate-spin"/> : isFavSuccess ? <Check size={18} /> : <Star size={18} />}
+                    </button>
+
+                    <button onClick={onClose} className="p-2 bg-white/20 hover:bg-white/30 text-white rounded-full transition-colors backdrop-blur-sm">
+                        <X size={18} />
+                    </button>
+                </div>
 
                 <div className="relative z-10 text-white mt-4">
                     <div className="flex items-center gap-2 mb-2 opacity-90">
                         <MapPin size={16} />
                         <span className="text-xs font-bold uppercase tracking-widest">{regionName}</span>
                     </div>
-                    <h2 className="text-3xl font-black leading-tight tracking-tight mb-1">{displayName}</h2>
+                    <h2 className="text-3xl font-black leading-tight tracking-tight mb-1 truncate">{displayName}</h2>
                     <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold border border-white/30">
                         {properties.admin_level === 'R' ? 'Région' : 'Département'}
                     </span>
@@ -83,12 +134,9 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
             {/* --- CONTENU --- */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-slate-50/50">
                 {isLoading ? (
-                    <div className="flex items-center justify-center h-40">
-                        <Loader2 className={`animate-spin ${theme.text}`} size={40}/>
-                    </div>
+                    <div className="flex items-center justify-center h-40"><Loader2 className={`animate-spin ${theme.text}`} size={40}/></div>
                 ) : (
                     <>
-                        {/* KPI PRINCIPAUX */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                                 <p className="text-xs font-bold text-slate-400 uppercase mb-1">Production</p>
@@ -102,15 +150,11 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
                             </div>
                         </div>
 
-                        {/* LISTE DE DETAILS */}
                         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-                            <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 font-bold text-sm text-slate-700">
-                                Informations Détaillées
-                            </div>
+                            <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 font-bold text-sm text-slate-700">Données Brutes</div>
                             <div className="divide-y divide-slate-50">
                                 {Object.entries(properties).map(([key, value]) => {
-                                    // Exclusion des clés techniques
-                                    if (['bbox', 'id', 'geom', 'geometry', 'user_id', 'admin_level', 'entity_name', 'nom_zone', 'valeur_production', 'rendement'].includes(key.toLowerCase()) || value === null) return null;
+                                    if (['bbox', 'id', 'geom', 'geometry', 'user_id', 'admin_level', 'entity_name', 'nom_zone', 'valeur_production', 'rendement', 'unite_mesure'].includes(key.toLowerCase()) || value === null) return null;
                                     return (
                                         <div key={key} className="flex justify-between items-center p-4 text-sm hover:bg-slate-50 transition-colors">
                                             <span className="text-slate-500 font-medium capitalize">{key.replace(/_/g, ' ')}</span>
@@ -122,17 +166,6 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
                         </div>
                     </>
                 )}
-            </div>
-
-            {/* --- FOOTER --- */}
-            <div className="p-6 bg-white border-t border-slate-100">
-                <button 
-                    onClick={handleGoToStats}
-                    className={`w-full py-4 ${theme.bg} hover:brightness-110 text-white font-bold rounded-2xl shadow-lg shadow-${theme.color}-500/30 flex items-center justify-center gap-2 transition-all transform active:scale-95`}
-                >
-                    <BarChart3 size={20} />
-                    Voir les statistiques complètes
-                </button>
             </div>
         </div>
     );
