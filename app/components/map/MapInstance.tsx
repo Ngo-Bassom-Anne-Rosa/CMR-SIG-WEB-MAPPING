@@ -79,7 +79,7 @@ export default function MapInstance({ activeFilter, culture, searchResult }: Map
             <Legend activeFilter={activeFilter} />
 
             {/* Conteneur du SideDrawer */}
-            <div className={`fixed top-24 right-6 bottom-6 w-96 z-[1000] transition-transform duration-500 ease-in-out transform ${selectedFeature ? 'translate-x-0' : 'translate-x-[120%]'}`}>
+            <div className={`fixed z-[1000] transition-transform duration-500 ease-in-out bottom-0 left-0 right-0 h-[60vh] rounded-t-3xl md:top-24 md:right-6 md:bottom-6 md:left-auto md:h-auto md:w-auto md:rounded-3xl md:translate-y-0 ${selectedFeature ? 'translate-y-0 md:translate-x-0' : 'translate-y-full md:translate-x-[120%]'}`}>
                 <SideDrawer 
                     feature={selectedFeature} 
                     activeFilter={activeFilter} 

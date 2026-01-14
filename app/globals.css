@@ -9,13 +9,28 @@
 
 html, body {
   height: 100%;
+  overflow: hidden; /* Empêche le scroll global du body, on gère le scroll dans main */
   @apply bg-slate-100 text-slate-900 antialiased;
 }
 
+/* Scrollbar moderne */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
+}
+
+/* Carte Leaflet */
 .leaflet-container {
   width: 100%;
   height: 100%;
-  @apply grayscale-[0.2] contrast-[1.1]; /* Look plus moderne */
+  font-family: inherit;
+  z-index: 0;
 }
 
 /* Scrollbar personnalisée pour la sidebar */

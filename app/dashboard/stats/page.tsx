@@ -3,6 +3,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { API_BASE_URL } from "@/app/lib/config";
+import { LoadingState, ErrorState } from "@/app/components/ui/States";
 
 // Imports Composants
 import StatsHeader from "./components/StatsHeader";
@@ -18,6 +19,7 @@ import { Basin } from "./types";
 function StatsContent() {
   const searchParams = useSearchParams();
   const compareWith = searchParams.get('compare_with');
+  const [error, setError] = useState<string | null>(null);
 
   // Etats
   const [loading, setLoading] = useState(true);
@@ -58,12 +60,17 @@ function StatsContent() {
 
     async function fetchData() {
       setLoading(true);
+      setError(null); // Reset error
       try {
         const [resSummary, resEvol, resList] = await Promise.all([
             fetch(`${API_BASE_URL}/kpi/summary/${currentSector.apiId}?year=${selectedYear}`),
             fetch(`${API_BASE_URL}/kpi/evolution/${currentSector.apiId}`),
             fetch(`${API_BASE_URL}/basins/${currentSector.apiId}/list?year=${selectedYear}`)
         ]);
+
+        if (!resSummary.ok || !resEvol.ok || !resList.ok) {
+            throw new Error("Erreur lors de la récupération des données.");
+        }
 
         const summary = await resSummary.json();
         const evol = await resEvol.json();
@@ -117,6 +124,12 @@ function StatsContent() {
     a.download = `stats-${currentSector.id}-${selectedYear}.csv`;
     a.click();
   };
+
+  if (loading && !kpiData) return <div className="h-96"><LoadingState message="Analyse des données en cours..." /></div>;
+  
+  if (error) return <div className="h-96 flex items-center justify-center"><ErrorState message={error} onRetry={() => window.location.reload()} /></div>;
+
+  if (!kpiData) return null;
 
   return (
     <div className="min-h-screen p-6 lg:p-10 space-y-10 pb-20">

@@ -5,6 +5,7 @@ import { X, Loader2, MapPin, BarChart3, Star, Check } from 'lucide-react';
 import { GeoJSONFeature, FeatureProperties } from "./types";
 import { THEME_CONFIG } from "./constants";
 import { API_BASE_URL } from "@/app/lib/config";
+import { LoadingState } from "../ui/States"; // Import
 
 interface SideDrawerProps {
     feature: GeoJSONFeature | null;
@@ -95,7 +96,7 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
     const unit = properties.unite_mesure || (activeFilter === 'elevage' ? 'Têtes' : 'Tonnes');
 
     return (
-        <div className="flex flex-col h-full bg-white text-slate-900 shadow-2xl overflow-hidden rounded-3xl border border-slate-100 relative">
+        <div className="flex flex-col h-full bg-white text-slate-900 shadow-2xl overflow-hidden rounded-t-3xl md:rounded-3xl border border-slate-100 relative w-full md:w-96">
             
             {/* --- HEADER --- */}
             <div className={`p-6 ${theme.bg} relative overflow-hidden`}>
@@ -134,7 +135,9 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
             {/* --- CONTENU --- */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-slate-50/50">
                 {isLoading ? (
-                    <div className="flex items-center justify-center h-40"><Loader2 className={`animate-spin ${theme.text}`} size={40}/></div>
+                    <div className="flex items-center justify-center h-40">
+                        <LoadingState message="Récupération des données..." />
+                    </div>
                 ) : (
                     <>
                         <div className="grid grid-cols-2 gap-4">
