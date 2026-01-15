@@ -75,7 +75,7 @@ export default function HeroSection() {
             {activeSlide.subtitle}
           </h1>
           <p className="text-lg md:text-xl text-slate-300 max-w-2xl mb-10 font-light animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
-            Notre plateforme SIG centralise les données de production pour offrir une vision stratégique et décisionnelle sur les secteurs clés de l'économie camerounaise.
+            Notre plateforme SIG centralise les données de production pour offrir une vision stratégique et décisionnelle sur les secteurs clés de l&apos;économie camerounaise.
           </p>
           <Link href="/dashboard" className="inline-flex items-center gap-3 bg-white text-slate-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-200 transition-transform transform hover:-translate-y-1 shadow-2xl animate-in fade-in slide-in-from-bottom-12 duration-700 delay-300">
             Explorer la Carte Interactive

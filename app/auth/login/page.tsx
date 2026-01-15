@@ -38,10 +38,9 @@ export default function LoginPage() {
       if (res.ok && data.token) {
         localStorage.setItem('authToken', data.token);
         
-        console.log('Login Success:', data);
         router.push('/dashboard');
       } else {
-        setError(data.msg || 'Une erreur est survenue.');
+        setError(data?.msg || 'Une erreur est survenue.');
       }
     } catch (err) {
       setError('Impossible de se connecter au serveur.');

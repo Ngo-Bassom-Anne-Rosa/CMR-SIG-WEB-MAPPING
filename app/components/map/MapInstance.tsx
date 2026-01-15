@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { MapContainer, TileLayer, WMSTileLayer, GeoJSON, ScaleControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -12,6 +13,7 @@ import { MapProps, GeoJSONFeature, CustomWMSOptions } from "./types";
 export default function MapInstance({ activeFilter, culture, searchResult }: MapProps) {
     const [selectedFeature, setSelectedFeature] = useState<GeoJSONFeature | null>(null);
     
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { setSelectedFeature(null); }, [activeFilter, culture]);
 
     const currentLayerName = LAYERS[activeFilter as keyof typeof LAYERS] || LAYERS.default;
@@ -50,7 +52,7 @@ export default function MapInstance({ activeFilter, culture, searchResult }: Map
                 <WMSTileLayer
                     key={`${currentLayerName}-${culture}`}
                     url={GEOSERVER_WMS_URL}
-                    params={wmsParams}
+                    params={wmsParams as any}
                 />
 
                 {selectedFeature && (

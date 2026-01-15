@@ -1,6 +1,6 @@
 import { Leaf, Dog, Fish } from 'lucide-react';
 
-export const THEME_CONFIG: any = {
+export const THEME_CONFIG: Record<string, { color: string, bg: string, text: string, light: string, border: string, icon: typeof Leaf}> = {
     agriculture: { 
         color: 'emerald', 
         bg: 'bg-emerald-500', 

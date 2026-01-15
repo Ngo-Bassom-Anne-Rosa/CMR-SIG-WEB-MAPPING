@@ -96,12 +96,13 @@ export default function Navbar({ activeColorClass }: NavbarProps) {
                     
                     <div className="md:hidden text-white cursor-pointer p-2">
                         <div className="md:hidden text-white cursor-pointer p-2">
-                        <button 
-                            onClick={() => setMenuOpen(!menuOpen)} 
-                            className="hover:text-amber-400 transition-colors p-1"
-                        >
-                            <Menu size={24} />
-                        </button>
+                            <button 
+                                onClick={() => setMenuOpen(!menuOpen)} 
+                                className="hover:text-amber-400 transition-colors p-1"
+                            >
+                                <Menu size={24} />
+                            </button>
+                        </div>
                     </div>
                 </div>
 

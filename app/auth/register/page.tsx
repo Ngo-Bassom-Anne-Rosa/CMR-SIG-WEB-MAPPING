@@ -43,15 +43,14 @@ export default function RegisterPage() {
 
       if (res.ok) {
         setSuccess('Inscription réussie ! Redirection en cours...');
-        console.log('Success:', data);
+        localStorage.setItem('authToken', data.token);  // identify immediately the user after inscription
         
         // Redirection after 1.5sec
         setTimeout(() => {
-          
           router.push('/dashboard'); 
         }, 1500); 
       } else {
-        setError(data.message || 'Une erreur est survenue.');
+        setError(data?.errors?.[0]?.msg || 'Une erreur est survenue.');
       }
     } catch (err) {
       setError('Impossible de se connecter au serveur.');
@@ -189,7 +188,7 @@ export default function RegisterPage() {
         {/* FOOTER */}
         <p className="mt-8 text-sm text-center text-slate-400">
             Vous avez déjà un compte ?{' '}
-          <Link href="/login" className="font-bold text-amber-400 hover:text-amber-300 hover:underline transition">
+          <Link href="/auth/login" className="font-bold text-amber-400 hover:text-amber-300 hover:underline transition">
             Se connecter
           </Link>
         </p>

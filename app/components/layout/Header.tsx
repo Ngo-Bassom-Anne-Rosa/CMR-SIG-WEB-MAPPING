@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -27,6 +28,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
+    const isSelectingRef = useRef(false);
 
     // Close results if click outside
     useEffect(() => {
@@ -56,9 +58,15 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
 
     // Search logic
     useEffect(() => {
+        if (isSelectingRef.current) {
+            isSelectingRef.current = false; // reset for next entry
+            return;
+        }
+
         const delayDebounceFn = setTimeout(async () => {
             if (query.length < 2) {
                 setResults([]);
+                setShowResults(false);
                 return;
             }
 
@@ -77,7 +85,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
                     ).slice(0, 5); // Limit to 5 results
 
                     setResults(filtered);
-                    setShowResults(true);
+                    if (filtered.length > 0) setShowResults(true);
                 }
             } catch (err) {
                 console.error("Erreur recherche", err);
@@ -90,8 +98,11 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
     }, [query, activeTab]);
 
     const handleSelectResult = (item: any) => {
+        isSelectingRef.current = true;
+        
         setQuery(item.entity_name || item.nom_zone);
-        setShowResults(false);
+        setShowResults(false); // close results
+        
         if (onSearchResult) {
             onSearchResult(item);
         }
@@ -118,7 +129,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
                 </div>
             </div>
 
-            {/* --- Search Bar --- */}
+            {/* Search bar */}
             <div className="flex-1 max-w-xl mx-4 relative" ref={searchRef}>
                 <div className="relative group">
                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-amber-500 transition-colors">

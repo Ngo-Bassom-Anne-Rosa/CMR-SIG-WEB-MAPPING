@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import L from "leaflet";
 
 export interface MapProps {

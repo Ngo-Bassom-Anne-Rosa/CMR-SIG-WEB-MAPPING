@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // FILE: ./app/components/ui/Legend.tsx
 "use client";
 import React from 'react';
