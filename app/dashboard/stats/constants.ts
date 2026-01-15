@@ -5,7 +5,7 @@ export const SECTEURS: Secteur[] = [
   { 
     id: "agriculture", 
     apiId: "agriculture", 
-    layerName: "agricultural_production_view", // CORRECTION POUR L'EXPORT
+    layerName: "agricultural_production_view",
     label: "Agriculture", 
     icon: Leaf, 
     color: "#10b981", 
@@ -16,8 +16,8 @@ export const SECTEURS: Secteur[] = [
   },
   { 
     id: "elevage", 
-    apiId: "farming", 
-    layerName: "farming_production_view", // CORRECTION POUR L'EXPORT
+    apiId: "breeding", 
+    layerName: "breeding_production_view",
     label: "Élevage", 
     icon: Dog, 
     color: "#f59e0b", 
@@ -29,7 +29,7 @@ export const SECTEURS: Secteur[] = [
   { 
     id: "peche", 
     apiId: "fishing", 
-    layerName: "fishing_production_view", // CORRECTION POUR L'EXPORT
+    layerName: "fishing_production_view",
     label: "Pêche", 
     icon: Fish, 
     color: "#3b82f6", 

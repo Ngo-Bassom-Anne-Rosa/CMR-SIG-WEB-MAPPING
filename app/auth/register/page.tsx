@@ -6,19 +6,18 @@ import { useRouter } from 'next/navigation';
 import { MapPin, X, Mail, Lock, Eye, EyeOff, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function RegisterPage() {
-  // --- ÉTATS (STATES) ---
+  // STATES
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Ajout pour UX
-  
-  // États de gestion de retour API
+  const [showPassword, setShowPassword] = useState(false);
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Ajout pour UX
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
-  // --- LOGIQUE (Gardée intacte, juste habillée) ---
+  // LOGIC
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -46,23 +45,22 @@ export default function RegisterPage() {
         setSuccess('Inscription réussie ! Redirection en cours...');
         console.log('Success:', data);
         
-        // Redirection après 2 secondes
+        // Redirection after 1.5sec
         setTimeout(() => {
           
           router.push('/dashboard'); 
-        }, 2000); 
+        }, 1500); 
       } else {
         setError(data.message || 'Une erreur est survenue.');
       }
     } catch (err) {
       setError('Impossible de se connecter au serveur.');
     } finally {
-      // On arrête le chargement seulement s'il y a une erreur (si succès, on laisse tourner jusqu'à la redirection)
       if (!success) setIsLoading(false);
     }
   };
 
-  // Fermeture vers l'accueil
+  // close, redirect to home
   const handleClose = () => {
     router.push('/');
   };
@@ -70,11 +68,11 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden font-sans">
       
-      {/* --- DÉCORATION DE FOND --- */}
+      {/* BACKGROUND DECOR */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      {/* --- CARTE PRINCIPALE --- */}
+      {/* PRINCIPAL CARTE */}
       <div className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-8 relative z-10">
         
         {/* HEADER : LOGO + CLOSE */}
@@ -98,10 +96,10 @@ export default function RegisterPage() {
           <p className="text-slate-400">Rejoignez la plateforme pour accéder aux cartes.</p>
         </div>
 
-        {/* FORMULAIRE */}
+        {/* FORMULAR */}
         <form onSubmit={handleSubmit} className="space-y-6">
           
-          {/* Champ Email */}
+          {/* Email */}
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium text-slate-300 ml-1">
               Adresse e-mail
@@ -124,7 +122,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Champ Password */}
+          {/* Password */}
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium text-slate-300 ml-1">
               Mot de passe
@@ -155,7 +153,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* MESSAGES D'ERREUR OU SUCCÈS */}
+          {/* ERROR / SUCCESS MSGS */}
           {error && (
             <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-lg">
                 <AlertCircle size={18} />
@@ -169,7 +167,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {/* BOUTON SUBMIT */}
+          {/* SUBMIT BUTTON */}
           <div>
             <button
               type="submit"
@@ -188,10 +186,9 @@ export default function RegisterPage() {
           </div>
         </form>
 
-        {/* FOOTER LIENS */}
+        {/* FOOTER */}
         <p className="mt-8 text-sm text-center text-slate-400">
             Vous avez déjà un compte ?{' '}
-            {/* Note : Vérifie si ta route est /login ou /auth/login */}
           <Link href="/login" className="font-bold text-amber-400 hover:text-amber-300 hover:underline transition">
             Se connecter
           </Link>
@@ -200,116 +197,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
-// 'use client';
-
-// import { useState } from 'react';
-// import Link from 'next/link';
-// import { useRouter } from 'next/navigation';
-
-// export default function RegisterPage() {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [error, setError] = useState('');
-//   const [success, setSuccess] = useState('');
-//   const router = useRouter();
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setError('');
-//     setSuccess('');
-
-//     if (!email || !password) {
-//       setError('Veuillez remplir tous les champs.');
-//       return;
-//     }
-
-//     try {
-//       const res = await fetch('/api/auth/register', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ email, password }),
-//       });
-
-//       const data = await res.json();
-
-//       if (res.ok) {
-//         setSuccess('Inscription réussie ! Vous allez être redirigé vers la page de connexion.');
-//         console.log('Success:', data);
-//         setTimeout(() => {
-//           router.push('/auth/login');
-//         }, 2000); // Redirect after 2 seconds
-//       } else {
-//         setError(data.message || 'Une erreur est survenue.');
-//       }
-//     } catch (err) {
-//       setError('Impossible de se connecter au serveur.');
-//     }
-//   };
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-//       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-//         <h1 className="text-2xl font-bold text-center text-gray-900">Créer un compte</h1>
-//         <form onSubmit={handleSubmit} className="space-y-6">
-//           <div>
-//             <label
-//               htmlFor="email"
-//               className="text-sm font-medium text-gray-700"
-//             >
-//               Adresse e-mail
-//             </label>
-//             <input
-//               id="email"
-//               name="email"
-//               type="email"
-//               autoComplete="email"
-//               required
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               className="block w-full px-3 py-2 mt-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-//               placeholder="vous@example.com"
-//             />
-//           </div>
-//           <div>
-//             <label
-//               htmlFor="password"
-//               className="text-sm font-medium text-gray-700"
-//             >
-//               Mot de passe
-//             </label>
-//             <input
-//               id="password"
-//               name="password"
-//               type="password"
-//               autoComplete="new-password"
-//               required
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               className="block w-full px-3 py-2 mt-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-//               placeholder="********"
-//             />
-//           </div>
-//           {error && <p className="text-sm text-red-600">{error}</p>}
-//           {success && <p className="text-sm text-green-600">{success}</p>}
-//           <div>
-//             <button
-//               type="submit"
-//               className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-//             >
-//               S&apos;inscrire
-//             </button>
-//           </div>
-//         </form>
-//         <p className="text-sm text-center text-gray-600">
-//             Vous avez déjà un compte ?{' '}
-//           <Link href="/auth/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-//             Se connecter
-//           </Link>
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }

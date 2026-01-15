@@ -103,7 +103,7 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto">
                 <div className="flex items-center gap-4 mb-8">
-                    {/* --- CORRECTION DU BOUTON RETOUR --- */}
+                    {/* Return button correction */}
                     <button onClick={() => router.back()} className="p-3 bg-white border border-slate-200 rounded-xl text-slate-600 hover:text-amber-500 transition-all shadow-sm">
                         <ArrowLeft size={20} />
                     </button>

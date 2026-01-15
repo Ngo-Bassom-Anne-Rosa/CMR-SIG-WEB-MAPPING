@@ -2,7 +2,6 @@
 import React from 'react';
 import { Leaf, Dog, Fish } from 'lucide-react';
 
-// --- TYPES POUR UNE LÉGENDE ROBUSTE ---
 type LegendColorItem = {
     type: 'color';
     color: string;
@@ -13,7 +12,7 @@ type LegendCircleItem = {
     type: 'circle';
     color: string;
     label: string;
-    sizeFactor: number; // ex: 1 pour 100%, 0.7 pour 70%
+    sizeFactor: number;
 };
 
 type LegendPatternItem = {
@@ -32,7 +31,7 @@ interface LegendData {
     items: LegendItem[];
 }
 
-// --- DÉFINITION DES DONNÉES DE LÉGENDE ---
+// Definition of the legend's data
 const LEGENDS: Record<string, LegendData> = {
     agriculture: {
         title: 'Production Agricole',
@@ -66,7 +65,6 @@ const LEGENDS: Record<string, LegendData> = {
     }
 };
 
-// --- LE COMPOSANT ---
 interface LegendProps {
     activeFiliere: string;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { MapPin, User, LogOut, Star, LayoutDashboard } from 'lucide-react';
+import { MapPin, User, LogOut, Star, LayoutDashboard, Menu } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/app/lib/config';
@@ -53,7 +53,7 @@ export default function Navbar({ activeColorClass }: NavbarProps) {
 
                     <div className="hidden md:flex items-center gap-4">
                         {isLoggedIn ? (
-                            // --- Vue Utilisateur Connecté ---
+                            // Connected user view
                             <div className="relative">
                                 <button 
                                     onClick={() => setMenuOpen(!menuOpen)}
@@ -82,7 +82,7 @@ export default function Navbar({ activeColorClass }: NavbarProps) {
                                 )}
                             </div>
                         ) : (
-                            // --- Vue Utilisateur Déconnecté ---
+                            // Disconnected user view
                             <>
                                 <Link href="/auth/login" className="px-5 py-2 rounded-full bg-slate-800/80 border border-slate-700 text-white hover:bg-slate-700 transition-all font-medium text-sm">
                                     Connexion
@@ -95,9 +95,50 @@ export default function Navbar({ activeColorClass }: NavbarProps) {
                     </div>
                     
                     <div className="md:hidden text-white cursor-pointer p-2">
-                        {/* ... icône menu mobile ... */}
+                        <div className="md:hidden text-white cursor-pointer p-2">
+                        <button 
+                            onClick={() => setMenuOpen(!menuOpen)} 
+                            className="hover:text-amber-400 transition-colors p-1"
+                        >
+                            <Menu size={24} />
+                        </button>
                     </div>
                 </div>
+
+                {/* Drop-down mobile menu */}
+                {menuOpen && (
+                    <div className="absolute top-20 left-4 right-4 bg-slate-800/95 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-2xl p-4 md:hidden z-50 flex flex-col gap-3 animate-in fade-in slide-in-from-top-5">
+                        {isLoggedIn ? (
+                            <>
+                                <div className="px-4 py-2 border-b border-slate-700 mb-2">
+                                     <span className="text-sm font-bold text-white block">{userName}</span>
+                                     <span className="text-xs text-slate-400">Connecté</span>
+                                </div>
+                                <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-200 hover:bg-white/10 rounded-xl transition-all">
+                                    <LayoutDashboard size={18} /> Accéder à la carte
+                                </Link>
+                                <Link href="/dashboard/profil" className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-200 hover:bg-white/10 rounded-xl transition-all">
+                                     <User size={18} /> Mon Profil
+                                </Link>
+                                <Link href="/dashboard/profil/favoris" className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-200 hover:bg-white/10 rounded-xl transition-all">
+                                     <Star size={18} /> Mes Favoris
+                                </Link>
+                                 <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition-all w-full text-left">
+                                    <LogOut size={18} /> Déconnexion
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/auth/login" className="flex items-center justify-center px-4 py-3 text-sm font-bold text-white bg-slate-700 hover:bg-slate-600 rounded-xl transition-all">
+                                    Connexion
+                                </Link>
+                                <Link href="/auth/register" className={`flex items-center justify-center px-4 py-3 text-sm font-bold text-slate-900 rounded-xl transition-all shadow-lg ${activeColorClass}`}>
+                                    Créer un compte
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
         </nav>
     );

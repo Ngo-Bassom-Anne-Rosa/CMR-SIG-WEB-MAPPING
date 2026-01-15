@@ -17,7 +17,7 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
     const [details, setDetails] = useState<FeatureProperties | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     
-    // Etats pour les favoris
+    // States
     const [isFavLoading, setIsFavLoading] = useState(false);
     const [isFavSuccess, setIsFavSuccess] = useState(false);
 
@@ -27,9 +27,8 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
 
     useEffect(() => {
         if (!feature) return;
-        setIsFavSuccess(false); // Reset état favori au changement
+        setIsFavSuccess(false);
         setIsLoading(true);
-        // Simulation fetch details si besoin, sinon on prend les props direct
         setTimeout(() => {
             setDetails(feature.properties);
             setIsLoading(false);
@@ -42,7 +41,7 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
         if (name) router.push(`/dashboard/stats?compare_with=${encodeURIComponent(name)}`);
     };
 
-    // --- LOGIQUE AJOUT FAVORIS ---
+    // add favoris logic
     const handleAddToFavorites = async () => {
         if (!details) return;
         
@@ -70,7 +69,7 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
 
             if (res.ok) {
                 setIsFavSuccess(true);
-                setTimeout(() => setIsFavSuccess(false), 2000); // Reset visuel après 2s
+                setTimeout(() => setIsFavSuccess(false), 2000); // visual reset after 2s
             } else {
                 const err = await res.json();
                 if(res.status === 400 && err.msg.includes('déjà')) {
@@ -98,14 +97,14 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
     return (
         <div className="flex flex-col h-full bg-white text-slate-900 shadow-2xl overflow-hidden rounded-t-3xl md:rounded-3xl border border-slate-100 relative w-full md:w-96">
             
-            {/* --- HEADER --- */}
+            {/* header */}
             <div className={`p-6 ${theme.bg} relative overflow-hidden`}>
                 <div className="absolute top-0 right-0 p-4 opacity-20">
                     <ThemeIcon size={120} className="text-white transform rotate-12 translate-x-4 -translate-y-4" />
                 </div>
                 
                 <div className="absolute top-4 right-4 flex gap-2 z-20">
-                    {/* BOUTON FAVORIS */}
+                    {/* favoris */}
                     <button 
                         onClick={handleAddToFavorites}
                         disabled={isFavLoading || isFavSuccess}
@@ -132,7 +131,7 @@ export default function SideDrawer({ feature, activeFilter, onClose }: SideDrawe
                 </div>
             </div>
 
-            {/* --- CONTENU --- */}
+            {/* content */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-slate-50/50">
                 {isLoading ? (
                     <div className="flex items-center justify-center h-40">

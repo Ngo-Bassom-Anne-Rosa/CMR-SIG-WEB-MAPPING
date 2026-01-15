@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-    const backendUrl = "https://cameroun-sig-api.onrender.com";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const backendUrl = `${baseUrl}/api/auth/login`;
 
     try {
         const body = await req.json();
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "Email and password are required" }, { status: 400 });
         }
 
-        const apiRes = await fetch(`${backendUrl}/api/auth/login`, {
+        const apiRes = await fetch(backendUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -28,12 +29,8 @@ export async function POST(req: NextRequest) {
 
         const response = NextResponse.json(data, { status: apiRes.status });
 
-        // Forward any cookies from the backend
         const setCookieHeader = apiRes.headers.get('Set-Cookie');
         if (setCookieHeader) {
-            // In Next.js 13+, you might need to handle multiple Set-Cookie headers correctly
-            // as they might be combined into a single comma-separated string, which is not standard.
-            // For simplicity here, we're assuming a single cookie or a compatible format.
             response.headers.set('Set-Cookie', setCookieHeader);
         }
         

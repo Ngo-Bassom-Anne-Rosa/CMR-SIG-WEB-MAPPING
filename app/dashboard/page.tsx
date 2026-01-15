@@ -6,31 +6,23 @@ import Header from "../components/layout/Header";
 import MapWrapper from "../components/map/MapWrapper";
 import { Loader2 } from 'lucide-react';
 
-// Composant interne qui utilise useSearchParams
 function DashboardContent() {
     const [isSidebarOpen, setSidebarOpen] = useState(true);
-    const [activeTab, setActiveTab] = useState('agriculture');
     const [selectedCulture, setSelectedCulture] = useState('Tous');
     const [searchResult, setSearchResult] = useState<any>(null);
 
+    const router = useRouter();
     const searchParams = useSearchParams();
     const target = searchParams.get('target');
-    const router = useRouter();
+    const sector = searchParams.get('sector');
+    const [activeTab, setActiveTab] = useState(sector || 'agriculture');
 
-    // --- EFFET POUR GERER LA REDIRECTION DEPUIS FAVORIS ---
     useEffect(() => {
         if (target) {
-            // On simule un objet "résultat de recherche" pour que le MapController le détecte
-            // Le MapController utilise 'entity_name' ou 'nom_zone' pour faire sa requête WFS et zoomer
             setSearchResult({
                 entity_name: target,
                 nom_zone: target,
-                // On met des valeurs par défaut pour les autres champs, 
-                // le SideDrawer fera son propre fetch si besoin ou affichera le nom
             });
-
-            // Optionnel : Nettoyer l'URL après prise en compte pour ne pas re-zoomer au refresh
-            // router.replace('/dashboard'); 
         }
     }, [target]);
 
@@ -67,7 +59,7 @@ function DashboardContent() {
     );
 }
 
-// Page principale avec Suspense Boundary
+// Principal page
 export default function DashboardPage() {
     return (
         <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-slate-100"><Loader2 className="animate-spin text-amber-500" size={48}/></div>}>

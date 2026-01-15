@@ -1,35 +1,34 @@
-// URLs de base
-// export const API_BASE_URL = "https://cameroun-sig-api.onrender.com/api";
-export const API_BASE_URL = "http://localhost:3001/api";
-// On pointe maintenant vers le service de cache GeoWebCache (GWC) pour des performances optimales
-export const GEOSERVER_WMS_URL = "http://localhost:7900/geoserver/sig_cmr_web_mapping/wms";
+// Base URLs
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+export const API_BASE_URL = `${BASE_URL}/api`;
+export const GEOSERVER_WMS_URL = process.env.NEXT_PUBLIC_GEOSERVER_URL || "http://localhost:7900/geoserver/sig_cmr_web_mapping/wms";
 
-// NOMS DES COUCHES (VUES) DANS GEOSERVER
+// Layers names (views) in GeoServer/PostGIS
 export const LAYERS = {
     agriculture: 'sig_cmr_web_mapping:agricultural_production_view',
-    elevage: 'sig_cmr_web_mapping:farming_production_view',
+    elevage: 'sig_cmr_web_mapping:breeding_production_view',
     peche: 'sig_cmr_web_mapping:fishing_production_view',
     default: 'sig_cmr_web_mapping:regions'
 };
 
-// NOMS DES COLONNES DE FILTRAGE UNIFIÉES
+// Columns names for filters
 export const FILTER_COLS = {
     agriculture: 'produit',
-    elevage: 'produit', // CORRIGÉ
-    peche: 'produit'    // CORRIGÉ
+    elevage: 'produit',
+    peche: 'produit'
 };
 
-// NOMS DES STYLES DANS GEOSERVER
+// Styles names
 export const STYLES = {
     agriculture: 'style_agriculture',
-    elevage: 'style_farming',
+    elevage: 'style_breeding',
     peche: 'style_fishing',
     default: 'polygon'
 };
 
-// MAPPING POUR LES APPELS API VERS LE BACKEND NODE.JS
+// Mapping with backend name conventions
 export const SECTOR_API_MAPPING: Record<string, string> = {
     agriculture: 'agriculture',
-    elevage: 'farming',
+    elevage: 'breeding',
     peche: 'fishing'
 };

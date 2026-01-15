@@ -12,7 +12,7 @@ html, body {
   @apply bg-slate-100 text-slate-900 antialiased;
 }
 
-/* Scrollbar moderne */
+/* modern Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -24,7 +24,7 @@ html, body {
   @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
 }
 
-/* Carte Leaflet */
+/* Leaflet map  */
 .leaflet-container {
   width: 100%;
   height: 100%;
@@ -32,17 +32,17 @@ html, body {
   z-index: 0;
 }
 
-/* Scrollbar personnalisée pour la sidebar */
+/* Tailwind Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-thumb { @apply bg-slate-700 rounded-full; }
 
 @media print {
-  /* Cacher la sidebar et les boutons d'action lors de l'impression */
+  /* Hide non-printable elements */
   aside, header, button, .print-hidden {
     display: none !important;
   }
   
-  /* Ajuster le contenu pour prendre toute la page */
+  /* adjust content to fit the page */
   main {
     margin: 0 !important;
     padding: 0 !important;
@@ -67,6 +67,6 @@ html, body {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(16, 185, 129, 0.2); /* Vert transparent */
+  background-color: rgba(16, 185, 129, 0.2);
   border-radius: 20px;
 }

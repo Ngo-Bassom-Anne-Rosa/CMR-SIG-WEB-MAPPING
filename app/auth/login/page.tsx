@@ -2,32 +2,32 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // Import pour la logique de redirection
+import { useRouter } from 'next/navigation';
 import { MapPin, X, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
-  const router = useRouter(); // Initialisation du router
+  const router = useRouter();
 
-  // --- ÉTATS (STATES) ---
+  // STATES
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // --- LOGIQUE DE CONNEXION ---
+  // LOGIC
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     if (!email || !password) {
       setError('Veuillez remplir tous les champs.');
-      setIsLoading(false); // Ajout pour arrêter le chargement en cas d'erreur de validation
+      setIsLoading(false);
       return;
     }
      
     try {
-      // On appelle notre propre API Next.js qui agit comme un proxy
+      // API Next.js into proxy
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,14 +36,12 @@ export default function LoginPage() {
 
       const data = await res.json();
       if (res.ok && data.token) {
-        // --- LA LIGNE LA PLUS IMPORTANTE ---
         localStorage.setItem('authToken', data.token);
-        // ------------------------------------
         
         console.log('Login Success:', data);
         router.push('/dashboard');
       } else {
-        setError(data.msg || 'Une erreur est survenue.'); // 'msg' car c'est ce que votre API renvoie
+        setError(data.msg || 'Une erreur est survenue.');
       }
     } catch (err) {
       setError('Impossible de se connecter au serveur.');
@@ -53,7 +51,7 @@ export default function LoginPage() {
     }
   };
 
-  // Logique pour fermer la page (retour accueil)
+  // close page
   const handleClose = () => {
     router.push('/');
   };
@@ -61,14 +59,14 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden font-sans">
       
-      {/* Effets de fond (Optionnel pour l'ambiance) */}
+      {/* Background effects */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      {/* Carte de Connexion */}
+      {/* Connexion Card */}
       <div className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-8 relative z-10">
         
-        {/* --- LOGO (Ton code exact + Logique de fermeture) --- */}
+        {/* LOGO */}
         <div className="flex items-center justify-between mb-10">
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-amber-400 rounded-lg">
@@ -76,7 +74,6 @@ export default function LoginPage() {
                 </div>
                 <h1 className="text-xl font-bold text-white">Agro-Sig <span className="text-amber-400">237</span></h1>
             </div>
-            {/* J'ai ajouté l'onClick pour que la croix ramène à l'accueil */}
             <button 
                 onClick={handleClose}
                 className="text-slate-400 hover:text-white transition"
@@ -85,14 +82,13 @@ export default function LoginPage() {
                 <X size={24} />
             </button>
         </div>
-        {/* --------------------------------------------------- */}
 
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-white mb-2">Bon retour !</h2>
           <p className="text-slate-400">Veuillez entrer vos coordonnées pour vous connecter.</p>
         </div>
 
-        {/* Message d'erreur visuel si besoin */}
+        {/* Error msg */}
         {error && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-500 text-sm text-center">
                 {error}
@@ -101,7 +97,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           
-          {/* Champ Email */}
+          {/* Email */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 ml-1">Adresse Email</label>
             <div className="relative group">
@@ -119,7 +115,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Champ Mot de passe */}
+          {/* Password */}
           <div className="space-y-2">
             <div className="flex justify-between items-center ml-1">
                 <label className="text-sm font-medium text-slate-300">Mot de passe</label>
@@ -149,7 +145,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Bouton de soumission */}
+          {/* Submission Button */}
           <button
             type="submit"
             disabled={isLoading}
@@ -166,7 +162,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Footer du form : Lien vers Register */}
+        {/* Footer */}
         <div className="mt-8 text-center">
           <p className="text-slate-400 text-sm">
             Pas encore de compte ?{' '}

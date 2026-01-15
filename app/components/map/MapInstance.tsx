@@ -1,14 +1,11 @@
-// FILE: ./app/components/map/MapInstance.tsx
 "use client";
 import { MapContainer, TileLayer, WMSTileLayer, GeoJSON, ScaleControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import React, { useState, useEffect } from "react";
 import { GEOSERVER_WMS_URL, LAYERS, STYLES, FILTER_COLS } from "@/app/lib/config";
 
-// Imports des composants modulaires
 import MapController from "./MapController";
 import SideDrawer from "./SideDrawer";
-// --- 1. IMPORT DE LA LÉGENDE ---
 import Legend from "../ui/Legend"; 
 import { MapProps, GeoJSONFeature, CustomWMSOptions } from "./types";
 
@@ -74,11 +71,9 @@ export default function MapInstance({ activeFilter, culture, searchResult }: Map
                 <ScaleControl position="bottomleft" />
             </MapContainer>
 
-            {/* --- 2. INTÉGRATION DE LA LÉGENDE --- */}
-            {/* On la passe activeFilter pour qu'elle s'adapte (Vert/Jaune/Bleu) */}
             <Legend activeFilter={activeFilter} />
 
-            {/* Conteneur du SideDrawer */}
+            {/* SideDrawer */}
             <div className={`fixed z-[1000] transition-transform duration-500 ease-in-out bottom-0 left-0 right-0 h-[60vh] rounded-t-3xl md:top-24 md:right-6 md:bottom-6 md:left-auto md:h-auto md:w-auto md:rounded-3xl md:translate-y-0 ${selectedFeature ? 'translate-y-0 md:translate-x-0' : 'translate-y-full md:translate-x-[120%]'}`}>
                 <SideDrawer 
                     feature={selectedFeature} 

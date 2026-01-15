@@ -1,4 +1,3 @@
-// FILE: ./app/components/layout/Header.tsx
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -14,7 +13,7 @@ type UserProfileHeader = {
 interface HeaderProps {
     isSidebarOpen: boolean;
     setSidebarOpen: (v: boolean) => void;
-    activeTab?: string; // Optionnel pour la rétrocompatibilité
+    activeTab?: string;
     onSearchResult?: (result: any) => void;
 }
 
@@ -22,14 +21,14 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const [user, setUser] = useState<UserProfileHeader | null>(null);
 
-    // États pour la recherche
+    // Search states
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
 
-    // Fermer les résultats si on clique ailleurs
+    // Close results if click outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -40,7 +39,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Chargement profil
+    // Load profil info
     useEffect(() => {
         const fetchUser = async () => {
             const token = localStorage.getItem('authToken');
@@ -55,7 +54,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
         fetchUser();
     }, []);
 
-    // Logique de recherche (Debounce simple via useEffect)
+    // Search logic
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
             if (query.length < 2) {
@@ -67,16 +66,16 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
             const apiFiliere = SECTOR_API_MAPPING[activeTab] || 'agriculture';
             
             try {
-                // On récupère la liste complète (optimisation possible: filtrer côté serveur si l'API le permettait)
-                // Ici, on filtre côté client sur la liste retournée car l'endpoint /list renvoie tout
-                const res = await fetch(`${API_BASE_URL}/basins/${apiFiliere}/list?year=2021`); // Année par défaut pour avoir les zones
+                const res = await fetch(`${API_BASE_URL}/basins/${apiFiliere}/list?year=2021`); // default year
                 if (res.ok) {
                     const data = await res.json();
-                    // Filtrage simple côté client
+                    
+                    // Simple filtering
                     const filtered = data.filter((item: any) => 
                         item.entity_name?.toLowerCase().includes(query.toLowerCase()) ||
                         item.nom_zone?.toLowerCase().includes(query.toLowerCase())
-                    ).slice(0, 5); // Limiter à 5 résultats
+                    ).slice(0, 5); // Limit to 5 results
+
                     setResults(filtered);
                     setShowResults(true);
                 }
@@ -85,7 +84,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
             } finally {
                 setIsSearching(false);
             }
-        }, 500); // Délai de 500ms
+        }, 500); // 500ms delay
 
         return () => clearTimeout(delayDebounceFn);
     }, [query, activeTab]);
@@ -119,7 +118,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
                 </div>
             </div>
 
-            {/* --- BARRE DE RECHERCHE --- */}
+            {/* --- Search Bar --- */}
             <div className="flex-1 max-w-xl mx-4 relative" ref={searchRef}>
                 <div className="relative group">
                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-amber-500 transition-colors">
@@ -135,7 +134,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
                     />
                 </div>
 
-                {/* Dropdown Résultats */}
+                {/* Results Dropdown */}
                 {showResults && results.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                         <div className="p-2">
@@ -160,7 +159,6 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
                 )}
             </div>
 
-            {/* ... (Reste du code User Profile inchangé) ... */}
             <div className="relative">
                 <button 
                     onClick={() => setProfileMenuOpen(!profileMenuOpen)}
@@ -194,7 +192,7 @@ export default function Header({ isSidebarOpen, setSidebarOpen, activeTab = 'agr
                                 </div>
                                 <div className="pt-2 border-t border-slate-100">
                                     <Link href="/" onClick={() => setProfileMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-colors">
-                                        <Home size={16} /> Page d'accueil
+                                        <Home size={16} /> Page d&apos;accueil
                                     </Link>
                                     <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors">
                                         <LogOut size={16} /> Déconnexion

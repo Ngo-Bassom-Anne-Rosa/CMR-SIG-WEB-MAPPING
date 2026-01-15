@@ -3,7 +3,7 @@ import { LucideIcon } from "lucide-react";
 export interface Secteur {
     id: string;
     apiId: string;
-    layerName: string; // Nom exact de la vue dans GeoServer/Postgres
+    layerName: string;
     label: string;
     icon: LucideIcon;
     color: string;
@@ -20,7 +20,7 @@ export interface Basin {
     production: number;
     rendement: number;
     unit: string;
-    level: 'R' | 'D' | 'A'; // Niveau administratif pour le groupement
+    level: 'R' | 'D' | 'A';
     climat?: string;
 }
 

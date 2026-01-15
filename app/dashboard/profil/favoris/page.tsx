@@ -17,7 +17,7 @@ export default function FavoritesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // --- ETATS POUR FILTRES ---
+    // Filters stats
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState<'ALL' | 'R' | 'D'>('ALL');
 
@@ -76,7 +76,7 @@ export default function FavoritesPage() {
         router.push(`/dashboard?target=${encodeURIComponent(name)}`);
     }
 
-    // --- LOGIQUE DE FILTRAGE ET GROUPEMENT ---
+    // filter & groupment logic
     const filteredFavorites = favorites.filter(fav => {
         const matchesSearch = fav.entity_name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesType = filterType === 'ALL' || fav.admin_level === filterType;
@@ -86,14 +86,14 @@ export default function FavoritesPage() {
     const regions = filteredFavorites.filter(f => f.admin_level === 'R');
     const departments = filteredFavorites.filter(f => f.admin_level === 'D');
 
-    // Stats globales (non affectées par les filtres visuels)
+    // Global Stats
     const stats = {
         total: favorites.length,
         regions: favorites.filter(f => f.admin_level === 'R').length,
         departments: favorites.filter(f => f.admin_level === 'D').length,
     };
 
-    // Composant helper pour rendre une liste
+    // Render list helper
     const RenderList = ({ items, label, icon: Icon, colorClass }: { items: Favorite[], label: string, icon: any, colorClass: string }) => (
         <div className="mb-6 last:mb-0">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
@@ -141,7 +141,7 @@ export default function FavoritesPage() {
                     </div>
                 </div>
 
-                {/* --- STATISTIQUES --- */}
+                {/* Stats */}
                 {!isLoading && !error && favorites.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                         <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
@@ -169,7 +169,7 @@ export default function FavoritesPage() {
                 )}
 
                 <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-lg border border-slate-100 min-h-[400px]">
-                    {/* --- BARRE DE FILTRES --- */}
+                    {/* Filters bar */}
                     <div className="flex flex-col sm:flex-row gap-4 mb-8 pb-6 border-b border-slate-100">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -203,7 +203,7 @@ export default function FavoritesPage() {
                         </div>
                     </div>
 
-                    {/* --- LISTE --- */}
+                    {/* List */}
                     {isLoading ? (
                          <div className="flex justify-center py-20"><Loader2 className="animate-spin text-amber-500" size={32}/></div>
                     ) : error ? (

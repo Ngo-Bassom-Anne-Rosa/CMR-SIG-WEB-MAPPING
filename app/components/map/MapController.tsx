@@ -14,7 +14,7 @@ interface MapControllerProps {
 export default function MapController({ onFeatureSelect, activeLayer, cqlFilter, searchResult }: MapControllerProps) {
     const map = useMap();
 
-    // Gestion du Zoom lors d'une recherche (inchangé)
+    // Zoom manager when a search result is selected
     useEffect(() => {
         if (searchResult) {
             const fetchGeometryAndZoom = async () => {
@@ -40,7 +40,7 @@ export default function MapController({ onFeatureSelect, activeLayer, cqlFilter,
         }
     }, [searchResult, map, activeLayer, onFeatureSelect]);
 
-    // Gestion du Clic sur la carte (GetFeatureInfo)
+    // clic on map manager
     useMapEvents({
         click: async (e) => {
             const size = map.getSize();
@@ -54,7 +54,6 @@ export default function MapController({ onFeatureSelect, activeLayer, cqlFilter,
                 LAYERS: activeLayer,
                 QUERY_LAYERS: activeLayer,
                 INFO_FORMAT: 'application/json',
-                // On demande beaucoup d'éléments pour être sûr d'avoir la petite division cachée en dessous
                 FEATURE_COUNT: '10', 
                 X: Math.floor(point.x).toString(),
                 Y: Math.floor(point.y).toString(),
@@ -71,12 +70,6 @@ export default function MapController({ onFeatureSelect, activeLayer, cqlFilter,
                 const data = await res.json();
                 
                 if (data.features && data.features.length > 0) {
-                    
-                    // --- NOUVELLE STRATÉGIE DE TRI : SURFACE ---
-                    // On ne se fie plus aux attributs (qui peuvent avoir des erreurs de saisie).
-                    // On calcule la surface de la "Bounding Box" de chaque élément trouvé.
-                    // Le plus petit élément est forcément le plus précis (Arrondissement < Département < Région).
-                    
                     const sortedFeatures = data.features.sort((a: any, b: any) => {
                         // Calcul surface A
                         // GeoJSON bbox format: [minX, minY, maxX, maxY]
@@ -89,16 +82,11 @@ export default function MapController({ onFeatureSelect, activeLayer, cqlFilter,
                         const heightB = Math.abs(b.bbox[3] - b.bbox[1]);
                         const areaB = widthB * heightB;
 
-                        // Tri ascendant : le plus petit en premier
+                        // Ascendent sort (smaller first)
                         return areaA - areaB;
                     });
 
-                    // Log pour débogage (à ouvrir dans la console F12)
-                    console.log("Zones trouvées sous le clic (triées par taille) :", 
-                        sortedFeatures.map((f: any) => `${f.properties.entity_name} (${f.properties.admin_level})`)
-                    );
-
-                    // On sélectionne le plus petit
+                    // select the min
                     onFeatureSelect(sortedFeatures[0]);
                 } else {
                     onFeatureSelect(null);

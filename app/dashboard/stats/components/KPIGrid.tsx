@@ -12,7 +12,7 @@ interface KPIGridProps {
 export default function KPIGrid({ kpiData, sector, year }: KPIGridProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Top Bassin */}
+            {/* Top Basin */}
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
                 <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity ${sector.bg} rounded-bl-3xl text-white`}>
                     <Award size={40} />
@@ -28,7 +28,7 @@ export default function KPIGrid({ kpiData, sector, year }: KPIGridProps) {
                 </div>
             </div>
 
-            {/* Production Totale */}
+            {/* Total Production */}
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
                 <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity ${sector.bg} rounded-bl-3xl text-white`}>
                     <Activity size={40} />

@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { BarChart } from 'lucide-react';
 
 export default function Footer() {

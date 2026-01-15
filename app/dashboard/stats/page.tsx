@@ -5,14 +5,12 @@ import { Loader2 } from "lucide-react";
 import { API_BASE_URL } from "@/app/lib/config";
 import { LoadingState, ErrorState } from "@/app/components/ui/States";
 
-// Imports Composants
 import StatsHeader from "./components/StatsHeader";
 import StatsFilters from "./components/StatsFilters";
 import KPIGrid from "./components/KPIGrid";
 import StatsCharts from "./components/StatsCharts";
 import BasinComparator from "./components/BasinComparator";
 
-// Imports Types & Constants
 import { SECTEURS } from "./constants";
 import { Basin } from "./types";
 
@@ -21,22 +19,22 @@ function StatsContent() {
   const compareWith = searchParams.get('compare_with');
   const [error, setError] = useState<string | null>(null);
 
-  // Etats
+  // Stats
   const [loading, setLoading] = useState(true);
   const [currentSector, setCurrentSector] = useState(SECTEURS[0]);
   const [years, setYears] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState(""); 
   
-  // Données
+  // Data
   const [kpiData, setKpiData] = useState<any>(null);
   const [evolutionData, setEvolutionData] = useState<any[]>([]);
   const [basinsList, setBasinsList] = useState<Basin[]>([]);
 
-  // Comparateur
+  // Comparator
   const [bassinA, setBassinA] = useState<Basin | null>(null);
   const [bassinB, setBassinB] = useState<Basin | null>(null);
 
-  // 1. Initialisation Années
+  // 1. Year init
   useEffect(() => {
     const fetchConfig = async () => {
       try {
@@ -79,7 +77,7 @@ function StatsContent() {
         setKpiData(summary);
         setEvolutionData(evol.map((e: any) => ({ year: e.year, value: e.total_production })));
 
-        // Mapping robuste pour les bassins
+        // Basins Mapping
         const formattedList: Basin[] = rawList.map((b: any) => ({
             id: b.id || b.entity_name || b.nom_zone,
             name: b.entity_name || b.nom_zone,
@@ -87,8 +85,7 @@ function StatsContent() {
             production: Number(b.valeur_production || b.production_tonnes || 0),
             rendement: Number(b.rendement || 0),
             unit: b.unite_mesure || currentSector.unit,
-            // Capture du niveau admin pour le groupement (R ou D)
-            level: b.admin_level || (b.region_name ? 'D' : 'R') // Fallback si admin_level manquant
+            level: b.admin_level || (b.region_name ? 'D' : 'R') // with Fallback if admin_level absent
         })).sort((a: Basin, b: Basin) => b.production - a.production);
 
         setBasinsList(formattedList);
@@ -134,10 +131,10 @@ function StatsContent() {
   return (
     <div className="min-h-screen p-6 lg:p-10 space-y-10 pb-20">
       
-      {/* HEADER */}
+      {/* Header */}
       <StatsHeader currentSector={currentSector} onExportCsv={exportCSV} />
 
-      {/* FILTRES */}
+      {/* Filters */}
       <StatsFilters 
         currentSector={currentSector} 
         setCurrentSector={setCurrentSector} 
@@ -153,7 +150,7 @@ function StatsContent() {
         </div>
       ) : (
         <>
-            {/* KPI GRID */}
+            {/* Grid KPI */}
             <KPIGrid kpiData={kpiData} sector={currentSector} year={selectedYear} />
 
             {/* CHARTS */}
@@ -174,7 +171,7 @@ function StatsContent() {
   );
 }
 
-// PAGE PRINCIPALE
+// Principal page
 export default function StatsPage() {
   return (
     <div className="flex h-screen w-full bg-[#f8fafc] overflow-hidden font-sans">

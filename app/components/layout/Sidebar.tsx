@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Leaf, Fish, Dog, X, BarChart3, Map as MapIcon, Layers, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { API_BASE_URL } from "@/app/lib/config";
-import { LoadingState } from "../ui/States"; // Import du composant
+import { LoadingState } from "../ui/States";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -17,7 +17,7 @@ interface SidebarProps {
 
 const SECTOR_MAPPING: Record<string, string> = {
   agriculture: "agriculture",
-  elevage: "farming",
+  elevage: "breeding",
   peche: "fishing",
 };
 
@@ -41,7 +41,7 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
         if (isMounted) {
           let options: string[] = [];
           if (backendSector === 'agriculture') options = data?.filters?.agriculture?.options || [];
-          else if (backendSector === 'farming') options = data?.filters?.farming?.options || [];
+          else if (backendSector === 'breeding') options = data?.filters?.breeding?.options || [];
           else if (backendSector === 'fishing') options = data?.filters?.fishing?.options || [];
           
           setFilters(["Tous", ...Array.from(new Set(options))]);
@@ -67,8 +67,7 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
     return "Filtres";
   };
 
-  // --- RESPONSIVE CLASS ---
-  // Sur mobile : fixed, plein écran ou w-80 avec overlay. Ici w-80 + z-index élevé.
+  // Responsive class
   const sidebarClasses = `
     fixed inset-y-0 left-0 z-[3000] bg-[#0f172a] text-white border-r border-slate-800 transition-transform duration-300 ease-in-out
     ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -77,7 +76,7 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
 
   return (
     <>
-      {/* Overlay mobile sombre quand sidebar ouverte */}
+      {/* dark mobile overlay when sidebar opened */}
       {isOpen && (
         <div 
             className="fixed inset-0 bg-black/50 z-[2999] lg:hidden backdrop-blur-sm transition-opacity"
@@ -87,17 +86,19 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
 
       <aside className={sidebarClasses}>
         <div className="flex flex-col h-full">
-          {/* Header Sidebar */}
+          {/* Header */}
           <div className="p-6 flex items-center justify-between border-b border-slate-800">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-400 rounded-lg shadow-lg shadow-amber-400/20">
-                <MapPin className="text-slate-900" size={24} />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight">Agro-Sig <span className="text-amber-400">237</span></h1>
-                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-tighter">Intelligence Géographique</p>
-              </div>
-            </div>
+            <Link href="/" className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-400 rounded-lg shadow-lg shadow-amber-400/20">
+                    <MapPin className="text-slate-900" size={24} />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold tracking-tight">Agro-Sig <span className="text-amber-400">237</span></h1>
+                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-tighter">Intelligence Géographique</p>
+                  </div>
+                </div>
+            </Link>
             <button onClick={() => setIsOpen(false)} className="lg:hidden p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
               <X size={20} />
             </button>
@@ -117,7 +118,7 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
               </div>
             </section>
 
-            {/* Filtres contextuels (visible uniquement sur dashboard) */}
+            {/* Filters */}
             {pathname === "/dashboard" && (
               <section className="animate-in fade-in duration-500">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mb-4 block">Filières Économiques</label>
@@ -163,19 +164,6 @@ export default function Sidebar({ isOpen, setIsOpen, activeTab, setActiveTab, se
                 </div>
               </section>
             )}
-
-            <section>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mb-4 block">Calques Administratifs</label>
-              <div className="px-2 space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-slate-900 border border-slate-800 opacity-50 cursor-not-allowed" title="Bientôt disponible">
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <Layers size={16} />
-                    <span className="text-sm">Régions</span>
-                  </div>
-                  <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                </div>
-              </div>
-            </section>
           </div>
 
           <div className="p-4 m-4 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50">

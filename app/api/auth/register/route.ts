@@ -2,13 +2,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-    const backendUrl =  "https://cameroun-sig-api.onrender.com";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const backendUrl = `${baseUrl}/api/auth/register`;
 
     try {
         const body = await req.json();
         
-        // Forward the entire body to the backend
-        const apiRes = await fetch(`${backendUrl}/api/auth/register`, {
+        const apiRes = await fetch(backendUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
         
         const response = NextResponse.json(data, { status: apiRes.status });
 
-        // Forward any cookies from the backend
         const setCookieHeader = apiRes.headers.get('Set-Cookie');
         if (setCookieHeader) {
             response.headers.set('Set-Cookie', setCookieHeader);

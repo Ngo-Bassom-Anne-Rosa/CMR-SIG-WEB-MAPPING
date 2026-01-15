@@ -12,9 +12,8 @@ interface StatsHeaderProps {
 
 export default function StatsHeader({ currentSector, onExportCsv }: StatsHeaderProps) {
     
-    // Fonction d'export SIG directe
+    // SIG export handler
     const handleExportSig = () => {
-        // On utilise layerName défini dans constants.ts qui correspond exactement à la vue DB
         const url = `${API_BASE_URL}/data/export?layer=${currentSector.layerName}&format=shapefile`;
         window.location.href = url;
     };

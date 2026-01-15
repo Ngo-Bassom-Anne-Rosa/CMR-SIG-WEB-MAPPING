@@ -12,7 +12,7 @@ interface BasinComparatorProps {
     setBassinB: (b: Basin) => void;
 }
 
-// Fonction utilitaire pour grouper la liste
+// Utilitary function to group lists
 const getGroupedOptions = (list: Basin[]) => {
     const regions = list.filter(b => b.level === 'R').sort((a, b) => a.name.localeCompare(b.name));
     const departments = list.filter(b => b.level === 'D').sort((a, b) => a.name.localeCompare(b.name));
@@ -72,7 +72,7 @@ export default function BasinComparator({ basinsList, sector, bassinA, setBassin
                 {/* Background Decor */}
                 <div className="absolute top-0 right-0 w-64 h-64 opacity-5 blur-3xl rounded-full pointer-events-none" style={{ backgroundColor: sector.color }} />
 
-                {/* --- SELECTEURS --- */}
+                {/* Selectors */}
                 <div className="grid grid-cols-1 md:grid-cols-7 gap-6 p-8 bg-slate-50/50 border-b border-slate-100">
                     {/* Zone A */}
                     <div className="md:col-span-3 relative">
@@ -112,7 +112,7 @@ export default function BasinComparator({ basinsList, sector, bassinA, setBassin
                     </div>
                 </div>
 
-                {/* --- STATS COMPARÉES --- */}
+                {/* Stats */}
                 <div className="p-8 space-y-8">
                     {/* Production */}
                     <div className="grid grid-cols-7 items-center gap-4">
@@ -143,7 +143,7 @@ export default function BasinComparator({ basinsList, sector, bassinA, setBassin
                         <div className="col-span-2 text-left text-xl font-bold text-slate-600">{bassinB?.rendement || '-'}</div>
                     </div>
 
-                    {/* Region Info */}
+                    {/* Info region */}
                     <div className="grid grid-cols-7 items-center gap-4 bg-slate-50 p-4 rounded-xl">
                         <div className="col-span-3 text-right text-sm font-semibold text-slate-600 truncate">{bassinA?.region}</div>
                         <div className="col-span-1 text-center text-[10px] font-bold text-slate-400">RÉGION</div>

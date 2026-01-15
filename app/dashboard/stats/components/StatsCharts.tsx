@@ -78,7 +78,7 @@ export default function StatsCharts({ evolutionData, repartitionData, sector }: 
                     </div>
                 </div>
                 
-                {/* Mini Legend Scrollable */}
+                {/* Scrollable Mini Legend */}
                 <div className="mt-6 space-y-3 max-h-40 overflow-y-auto custom-scrollbar pr-2">
                     {repartitionData?.map((item, idx) => (
                         <div key={idx} className="flex justify-between items-center text-xs">

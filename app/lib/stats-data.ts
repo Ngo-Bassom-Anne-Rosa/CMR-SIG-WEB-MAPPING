@@ -1,5 +1,3 @@
-// app/lib/stats-data.ts
-
 export type Bassin = {
     id: string;
     name: string;
