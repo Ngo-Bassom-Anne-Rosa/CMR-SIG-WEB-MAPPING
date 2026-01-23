@@ -2,6 +2,11 @@
 
 Interface utilisateur pour la plateforme de cartographie interactive des bassins de production au Cameroun. Ce projet est développé avec Next.js 16 (App Router), Tailwind CSS et React-Leaflet.
 
+<div style="display: flex; gap: 16px;">
+  <img src="img/home.png" alt="Landing Page" width="45%">
+  <img src="img/map.png" alt="Interactive Map Page" width="45%">
+</div>
+
 ## Pré-requis
 
 1.  Node.js (version 18 ou supérieure)
