@@ -8,10 +8,10 @@ import { Secteur } from "../types";
 interface StatsHeaderProps {
     currentSector: Secteur;
     onExportCsv: () => void;
+    show: boolean;
 }
 
-export default function StatsHeader({ currentSector, onExportCsv }: StatsHeaderProps) {
-    
+export default function StatsHeader({ currentSector, onExportCsv, show }: StatsHeaderProps) {    
     // SIG export handler
     const handleExportSig = () => {
         const url = `${API_BASE_URL}/data/export?layer=${currentSector.layerName}&format=shapefile`;
@@ -31,20 +31,22 @@ export default function StatsHeader({ currentSector, onExportCsv }: StatsHeaderP
                     <p className="text-slate-500 font-medium">Statistiques officielles par filière</p>
                 </div>
             </div>
-            <div className="flex gap-2">
-                <button 
-                    onClick={onExportCsv} 
-                    className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all text-slate-700"
-                >
-                    <FileSpreadsheet size={18} /> CSV
-                </button>
-                <button 
-                    onClick={handleExportSig} 
-                    className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all"
-                >
-                    <Database size={18} /> Export SIG
-                </button>
-            </div>
+            {show &&
+                <div className="flex gap-2">
+                    <button 
+                        onClick={onExportCsv} 
+                        className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all text-slate-700 hover:cursor-pointer"
+                    >
+                        <FileSpreadsheet size={18} /> CSV
+                    </button>
+                    <button 
+                        onClick={handleExportSig} 
+                        className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all hover:cursor-pointer"
+                    >
+                        <Database size={18} /> Export SIG
+                    </button>
+                </div>
+            }
         </div>
     );
 }

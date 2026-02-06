@@ -133,7 +133,7 @@ function StatsContent() {
     <div className="min-h-screen p-6 lg:p-10 space-y-10 pb-20">
       
       {/* Header */}
-      <StatsHeader currentSector={currentSector} onExportCsv={exportCSV} />
+      <StatsHeader currentSector={currentSector} onExportCsv={exportCSV} show={kpiData?.total_production ?? false} />
 
       {/* Filters */}
       <StatsFilters 
@@ -151,21 +151,41 @@ function StatsContent() {
         </div>
       ) : (
         <>
-            {/* Grid KPI */}
-            <KPIGrid kpiData={kpiData} sector={currentSector} year={selectedYear} />
+            {kpiData?.total_production ? (
+              <>
+                {/* Grid KPI */}
+                <KPIGrid kpiData={kpiData} sector={currentSector} year={selectedYear} />
 
-            {/* CHARTS */}
-            <StatsCharts evolutionData={evolutionData} repartitionData={kpiData.repartition} sector={currentSector} />
+                {/* CHARTS */}
+                <StatsCharts evolutionData={evolutionData} repartitionData={kpiData.repartition} sector={currentSector} />
 
-            {/* COMPARATOR */}
-            <BasinComparator 
-                basinsList={basinsList} 
-                sector={currentSector} 
-                bassinA={bassinA} 
-                setBassinA={setBassinA} 
-                bassinB={bassinB} 
-                setBassinB={setBassinB} 
-            />
+                {/* COMPARATOR */}
+                <BasinComparator 
+                    basinsList={basinsList} 
+                    sector={currentSector} 
+                    bassinA={bassinA} 
+                    setBassinA={setBassinA} 
+                    bassinB={bassinB} 
+                    setBassinB={setBassinB} 
+                />
+              </>
+            ) : (
+              <div className="h-96 w-full flex flex-col items-center justify-center bg-white rounded-3xl border border-slate-100 shadow-sm">
+                <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-amber-50 mb-4">
+                  <Loader2 className="text-amber-500" size={32} />
+                </div>
+
+                <h3 className="text-slate-700 font-semibold text-lg mb-1">
+                  Aucune donnée disponible
+                </h3>
+
+                <p className="text-slate-400 text-sm text-center max-w-md">
+                  Aucune production n’a été enregistrée pour ce secteur et cette année.
+                  Essayez de modifier les filtres ou sélectionnez une autre période.
+                </p>
+              </div>
+            )
+          }
         </>
       )}
     </div>

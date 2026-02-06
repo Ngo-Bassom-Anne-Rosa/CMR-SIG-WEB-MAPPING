@@ -35,7 +35,7 @@ npm install
 Dupliquez le fichier `.env.example` et renommez-le en `.env`. Modifiez les valeurs pour correspondre à votre configuration locale :
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_GEOSERVER_URL=http://localhost:7900/geoserver/sig_cmr_web_mapping/wms
+NEXT_PUBLIC_GEOSERVER_URL=http://localhost:8080/geoserver/sig_cmr_web_mapping/wms
 ```
 
 Vérifiez que les URLs pointent correctement vers vos services locaux. Si vous déployez l'application, modifiez ces valeurs en conséquence.

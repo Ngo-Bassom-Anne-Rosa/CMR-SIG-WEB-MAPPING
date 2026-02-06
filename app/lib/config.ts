@@ -1,7 +1,7 @@
 // Base URLs
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 export const API_BASE_URL = `${BASE_URL}/api`;
-export const GEOSERVER_WMS_URL = process.env.NEXT_PUBLIC_GEOSERVER_URL || "http://localhost:7900/geoserver/sig_cmr_web_mapping/wms";
+export const GEOSERVER_WMS_URL = process.env.NEXT_PUBLIC_GEOSERVER_URL || "http://localhost:8080/geoserver/sig_cmr_web_mapping/wms";
 
 // Layers names (views) in GeoServer/PostGIS
 export const LAYERS = {
